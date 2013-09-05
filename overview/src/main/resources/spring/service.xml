@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans.xsd
+           http://www.springframework.org/schema/util
+           http://www.springframework.org/schema/util/spring-util.xsd">
+
+  <!-- Instantiation with a static factory method -->
+  <bean id="AccountService"
+        class="com.github.tachesimazzoca.spring.overview.service.AccountServiceFactory"
+        factory-method="create">
+    <constructor-arg type="java.lang.String" value=""/>
+  </bean>
+  <bean id="MockAccountService"
+        class="com.github.tachesimazzoca.spring.overview.service.AccountServiceFactory"
+        factory-method="create">
+    <constructor-arg type="java.lang.String" value="Mock"/>
+  </bean>
+
+  <!-- Instantiation using an instance factory method -->
+  <bean id="ServiceLocator"
+        class="com.github.tachesimazzoca.spring.overview.service.ServiceLocator">
+    <constructor-arg>
+      <util:constant static-field="com.github.tachesimazzoca.spring.overview.service.ServiceLocator.Profile.DEVELOPMENT"/>
+    </constructor-arg>
+  </bean>
+  <bean id="DevAccountService"
+        factory-bean="ServiceLocator"
+        factory-method="createAccountService"/>
+
+  <!-- Setter-based dependency injection -->
+  <bean id="TestAccountService"
+        class="com.github.tachesimazzoca.spring.overview.service.AccountServiceImpl">
+    <property name="accountDao" ref="MockAccountDao"/>
+  </bean>
+
+</beans>
