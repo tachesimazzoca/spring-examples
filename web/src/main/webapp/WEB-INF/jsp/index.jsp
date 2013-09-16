@@ -15,5 +15,9 @@
   <li><a href="${basedir}/pages/help">pages/help</a></li>
   <li><a href="${basedir}/pages/about">pages/about</a></li>
 </ul>
+<h3>Api</h3>
+<ul>
+  <li><a href="${basedir}/api/config">api/config</a></li>
+</ul>
 </c:param>
 </c:import>
