@@ -34,51 +34,28 @@
       <version>${spring.version}</version>
     </dependency>
     <dependency>
+      <groupId>taglibs</groupId>
+      <artifactId>standard</artifactId>
+      <version>1.1.2</version>
+    </dependency>
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>jstl</artifactId>
+      <version>1.2</version>
+    </dependency>
+    <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-lang3</artifactId>
       <version>3.1</version>
     </dependency>
   </dependencies>
-  <profiles>
-    <profile>
-      <id>development</id>
-      <activation>
-        <activeByDefault>true</activeByDefault>
-      </activation>
-      <properties>
-        <app.resources>src/main/resources</app.resources>
-        <app.webResources>src/main/webapp</app.webResources>
-      </properties>
-    </profile>
-    <profile>
-      <id>production</id>
-      <activation>
-        <activeByDefault>false</activeByDefault>
-      </activation>
-      <properties>
-        <maven.test.skip>true</maven.test.skip>
-        <app.resources>src/production/resources</app.resources>
-        <app.webResources>src/production/webapp</app.webResources>
-      </properties>
-    </profile>
-  </profiles>
   <build>
-    <resources>
-      <resource>
-        <directory>${app.resources}</directory>
-      </resource>
-    </resources>
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-war-plugin</artifactId>
         <configuration>
-          <warName>spring-examples-web</warName>
-          <webResources>
-            <resource>
-              <directory>${app.webResources}</directory>
-            </resource>
-          </webResources>
+          <warName>${artifactId}</warName>
         </configuration>
       </plugin>
     </plugins>
@@ -87,26 +64,11 @@
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-site-plugin</artifactId>
-        <version>2.3</version>
-        <configuration>
-          <locales>en</locales>
-          <inputEncoding>${project.build.sourceEncoding}</inputEncoding>
-          <outputEncoding>${project.reporting.outputEncoding}</outputEncoding>
-         </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
         <version>2.9</version>
         <configuration>
           <locale>en</locale>
         </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-jxr-plugin</artifactId>
-        <version>2.3</version>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
