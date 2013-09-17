@@ -1,0 +1,10 @@
+<h1 th:text="${page.title}">Title</h1>
+<p th:text="${page.description}">Description</p>
+
+<div>Is this the "about" page?</div>
+
+<ul th:unless="${#lists.isEmpty(allPages)}">
+  <li th:each="p : ${allPages}">
+    <a th:href="${p.name}"><span th:text="${p.title}">Title</span></a>
+  </li>
+</ul>

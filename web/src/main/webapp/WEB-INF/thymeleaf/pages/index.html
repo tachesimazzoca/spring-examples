@@ -1,0 +1,11 @@
+<h1>Pages</h1>
+
+<h2>Table of Contents</h2>
+<dl th:each="p : ${allPages}">
+  <dt><a th:href="${p.name}"><span th:text="${p.title}">Title</span></a></dt>
+  <dd><span th:text="${p.description}">Description</span></dd>
+</dl>
+<dl>
+  <dt><a href="nopage"><span>Invalid page</span></a></dt>
+  <dd>The link should redirect to this index page.</dd>
+</dl>
