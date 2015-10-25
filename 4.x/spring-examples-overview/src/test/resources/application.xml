@@ -10,8 +10,9 @@
         <constructor-arg value="classpath:/application.properties" />
     </bean>
 
-    <bean id="accountDao"
+    <bean id="mockAccountDao"
           class="com.github.tachesimazzoca.spring.examples.overview.models.MockAccountDao" />
+    <alias name="mockAccountDao" alias="accountDao" />
     <bean id="accountService"
           class="com.github.tachesimazzoca.spring.examples.overview.models.MockAccountService">
         <constructor-arg ref="accountDao" />
