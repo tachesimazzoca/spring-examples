@@ -1,4 +1,4 @@
-package com.github.tachesimazzoca.spring.examples.overview.models;
+package com.github.tachesimazzoca.spring.examples.overview.config;
 
 import org.springframework.core.io.Resource;
 

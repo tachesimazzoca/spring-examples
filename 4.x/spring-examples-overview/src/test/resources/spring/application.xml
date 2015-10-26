@@ -5,7 +5,7 @@
        http://www.springframework.org/schema/beans/spring-beans.xsd">
 
     <bean id="config"
-          class="com.github.tachesimazzoca.spring.examples.overview.models.ConfigFactory"
+          class="com.github.tachesimazzoca.spring.examples.overview.config.ConfigFactory"
           factory-method="createConfig">
         <constructor-arg value="classpath:/config.properties" />
     </bean>

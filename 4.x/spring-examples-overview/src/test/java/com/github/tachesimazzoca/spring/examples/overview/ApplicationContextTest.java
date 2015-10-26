@@ -3,7 +3,7 @@ package com.github.tachesimazzoca.spring.examples.overview;
 import com.github.tachesimazzoca.spring.examples.overview.models.Account;
 import com.github.tachesimazzoca.spring.examples.overview.models.AccountDao;
 import com.github.tachesimazzoca.spring.examples.overview.models.AccountService;
-import com.github.tachesimazzoca.spring.examples.overview.models.Config;
+import com.github.tachesimazzoca.spring.examples.overview.config.Config;
 import org.junit.Test;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
