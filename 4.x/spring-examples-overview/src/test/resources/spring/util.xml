@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/util
+       http://www.springframework.org/schema/util/spring-util.xsd">
+
+    <bean id="admin" class="com.github.tachesimazzoca.spring.examples.overview.models.Account">
+        <constructor-arg value="1"/>
+    </bean>
+    <bean id="guest" class="com.github.tachesimazzoca.spring.examples.overview.models.Account">
+        <constructor-arg value="2"/>
+    </bean>
+
+    <!--FieldRetrievingFactoryBean-->
+    <util:constant id="locale" static-field="java.util.Locale.US" />
+
+    <!--PropertyPathFactoryBean-->
+    <util:property-path id="adminId" path="admin.id"/>
+    <!--
+    <bean id="adminId" class="org.springframework.beans.factory.config.PropertyPathFactoryBean">
+        <property name="targetObject" ref="admin"/>
+        <property name="propertyPath" value="id"/>
+    </bean>
+    -->
+    <!--
+        PropertyPathFactoryBean never look up object fields. Use FieldRetrievingFactoryBean instead.
+    -->
+    <bean id="guestId" class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean">
+        <property name="targetObject" ref="guest"/>
+        <property name="targetField" value="id"/>
+    </bean>
+
+    <!--PropertiesFactoryBean-->
+    <util:properties id="config" location="classpath:/config.properties"/>
+    <!--
+    <bean id="config" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+        <property name="location" value="classpath:/config.properties"/>
+    </bean>
+    -->
+
+    <!--ListFactoryBean-->
+    <util:list id="emailList">
+        <value>user1@example.net</value>
+        <value>user2@example.net</value>
+    </util:list>
+    <!--
+    <bean id="emailList" class="org.springframework.beans.factory.config.ListFactoryBean">
+        <property name="sourceList">
+            <list>
+                <value>user1@example.net</value>
+                <value>user2@example.net</value>
+            </list>
+        </property>
+    </bean>
+    -->
+
+    <!--MapFactoryBean-->
+    <util:map id="emailMap" key-type="long" value-type="java.lang.String" map-class="java.util.LinkedHashMap">
+        <entry key="1" value="user1@example.net"/>
+        <entry key="2" value="user2@example.net"/>
+    </util:map>
+    <!--
+    <bean id="emailMap" class="org.springframework.beans.factory.config.MapFactoryBean">
+        <property name="sourceMap">
+            <map key-type="long" value-type="java.lang.String">
+                <entry key="1" value="user1@example.net" />
+                <entry key="2" value="user2@example.net" />
+            </map>
+        </property>
+    </bean>
+    -->
+
+    <!--SetFactoryBean-->
+    <util:set id="numberSet" value-type="double" set-class="java.util.LinkedHashSet">
+        <value>12.3</value>
+        <value>45.6</value>
+        <value>78.9</value>
+    </util:set>
+    <!--
+    <bean id="numberSet" class="org.springframework.beans.factory.config.SetFactoryBean">
+        <property name="sourceSet">
+            <set value-type="double">
+                <value>12.3</value>
+                <value>45.6</value>
+                <value>78.9</value>
+            </set>
+        </property>
+    </bean>
+    -->
+</beans>

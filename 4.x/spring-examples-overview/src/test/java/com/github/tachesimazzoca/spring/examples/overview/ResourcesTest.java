@@ -22,7 +22,7 @@ public class ResourcesTest {
     @Test
     public void testClassPathResource() throws IOException {
         ApplicationContext ctx = new StaticApplicationContext();
-        Resource res = ctx.getResource("classpath:/application.properties");
+        Resource res = ctx.getResource("classpath:/config.properties");
         Properties props = new Properties();
         props.load(res.getInputStream());
         assertEquals("http://www.example.net", props.get("url.home"));
@@ -31,7 +31,7 @@ public class ResourcesTest {
     @Test
     public void testFileSystemResource() throws IOException {
         ApplicationContext ctx = new StaticApplicationContext();
-        String path = this.getClass().getResource("/application.properties").getPath();
+        String path = this.getClass().getResource("/config.properties").getPath();
         Resource res = ctx.getResource("file://" + path);
         Properties props = new Properties();
         props.load(res.getInputStream());

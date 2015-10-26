@@ -7,7 +7,7 @@
     <bean id="config"
           class="com.github.tachesimazzoca.spring.examples.overview.models.ConfigFactory"
           factory-method="createConfig">
-        <constructor-arg value="classpath:/application.properties" />
+        <constructor-arg value="classpath:/config.properties" />
     </bean>
 
     <bean id="mockAccountDao"
