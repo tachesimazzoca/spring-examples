@@ -16,6 +16,11 @@
 
     <!--FieldRetrievingFactoryBean-->
     <util:constant id="locale" static-field="java.util.Locale.US" />
+    <!--
+    <bean id="locale" class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean">
+        <property name="staticField" value="java.util.Locale.US"/>
+    </bean>
+    -->
 
     <!--PropertyPathFactoryBean-->
     <util:property-path id="adminId" path="admin.id"/>
@@ -34,10 +39,24 @@
     </bean>
 
     <!--PropertiesFactoryBean-->
-    <util:properties id="config" location="classpath:/config.properties"/>
+    <util:properties id="configA" location="classpath:/config.properties"/>
     <!--
-    <bean id="config" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+    <bean id="configA" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
         <property name="location" value="classpath:/config.properties"/>
+    </bean>
+    -->
+    <util:properties id="configB">
+        <prop key="url.home">http://www.example.net</prop>
+        <prop key="url.base">/spring-examples-overview</prop>
+    </util:properties>
+    <!--
+    <bean id="configB" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+        <property name="properties">
+            <props>
+                <prop key="url.home">http://www.example.net</prop>
+                <prop key="url.base">/spring-examples-overview</prop>
+            </props>
+        </property>
     </bean>
     -->
 

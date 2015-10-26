@@ -37,6 +37,7 @@ public class ApplicationContextTest {
         // config
         Config config = context.getBean("config", Config.class);
         assertEquals("http://www.example.net", config.get("url.home"));
+        assertEquals("/spring-examples-overview", config.get("url.base"));
 
         // accountDao
         AccountDao dao1 = context.getBean("mockAccountDao", AccountDao.class);
@@ -65,8 +66,10 @@ public class ApplicationContextTest {
         assertEquals(2L, guestId.longValue());
 
         // util:properties - PropertiesFactoryBean
-        Properties config = context.getBean("config", Properties.class);
-        assertEquals(createPropertiesByClassPath("/config.properties"), config);
+        Properties configA = context.getBean("configA", Properties.class);
+        assertEquals(createPropertiesByClassPath("/config.properties"), configA);
+        Properties configB = context.getBean("configB", Properties.class);
+        assertEquals(configA, configB);
 
         // util:list - ListFactoryBean
         List<String> emailList = (List<String>) context.getBean("emailList", List.class);
