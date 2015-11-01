@@ -6,6 +6,7 @@ import com.github.tachesimazzoca.spring.examples.overview.models.AccountService;
 import com.github.tachesimazzoca.spring.examples.overview.config.Config;
 import org.junit.Test;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import java.io.IOException;
@@ -30,7 +31,6 @@ public class ApplicationContextTest {
         return new LinkedHashSet<T>(Arrays.asList(values));
     }
 
-    @Test
     public void testXmlApplicationContext() {
         ApplicationContext context = new ClassPathXmlApplicationContext("spring/application.xml");
 
@@ -51,7 +51,6 @@ public class ApplicationContextTest {
         assertEquals(id, account.id.longValue());
     }
 
-    @Test
     public void testUtilSchema() throws IOException {
         ApplicationContext context = new ClassPathXmlApplicationContext("spring/util.xml");
 
@@ -89,5 +88,21 @@ public class ApplicationContextTest {
         assertEquals("LinkedHashSet", numberSet.getClass().getSimpleName());
         assertEquals(3, numberSet.size());
         assertEquals(set(12.3, 45.6, 78.9), numberSet);
+    }
+
+    @Test
+    public void testJavaBasedConfiguration() {
+        ApplicationContext context = new AnnotationConfigApplicationContext(AppConfiguration.class);
+
+        // config
+        Config config = context.getBean("config", Config.class);
+        assertEquals("http://www.example.net", config.get("url.home"));
+        assertEquals("/spring-examples-overview", config.get("url.base"));
+
+        // accountService
+        AccountService accountService = context.getBean("accountService", AccountService.class);
+        long id = 1234L;
+        Account account = accountService.getAccountById(id);
+        assertEquals(id, account.id.longValue());
     }
 }
