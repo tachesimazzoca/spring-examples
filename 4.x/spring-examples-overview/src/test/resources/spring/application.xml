@@ -4,10 +4,15 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans
        http://www.springframework.org/schema/beans/spring-beans.xsd">
 
+    <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_FALLBACK"/>
+        <property name="locations" value="classpath:/spring/common.properties"/>
+    </bean>
+
     <bean id="config"
           class="com.github.tachesimazzoca.spring.examples.overview.config.ConfigFactory"
           factory-method="createConfig">
-        <constructor-arg value="classpath:/config.properties" />
+        <constructor-arg value="${config.resource}" />
     </bean>
 
     <bean id="mockAccountDao"

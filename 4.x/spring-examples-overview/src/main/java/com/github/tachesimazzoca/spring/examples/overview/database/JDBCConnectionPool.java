@@ -5,11 +5,11 @@ import java.sql.Connection;
 public interface JDBCConnectionPool {
     public Connection getConnection();
 
-    public String getDriver();
+    public String getDriverClassName();
 
     public String getUrl();
 
-    public String getUser();
+    public String getUsername();
 
     public String getPassword();
 }
