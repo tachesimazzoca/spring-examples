@@ -17,8 +17,7 @@
     <mvc:resources mapping="/assets/**" location="/assets/"/>
 
     <!-- freemarker -->
-    <bean id="freemarkerConfig"
-          class="org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer">
+    <bean class="org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer">
         <property name="templateLoaderPath" value="/WEB-INF/freemarker"/>
         <property name="freemarkerVariables">
             <map>
@@ -27,8 +26,7 @@
             </map>
         </property>
     </bean>
-    <bean id="viewResolver"
-          class="org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver">
+    <bean class="org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver">
         <property name="cache" value="true"/>
         <property name="prefix" value=""/>
         <property name="suffix" value=".ftl"/>
