@@ -1,5 +1,8 @@
 package com.github.tachesimazzoca.spring.examples.overview;
 
+import com.github.tachesimazzoca.spring.examples.overview.models.Account;
+import com.github.tachesimazzoca.spring.examples.overview.models.AccountDao;
+import com.github.tachesimazzoca.spring.examples.overview.models.JdbcAccountDao;
 import org.junit.Test;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -19,28 +22,22 @@ import java.util.Map;
 import static org.junit.Assert.*;
 
 public class JdbcTemplateTest {
+    private static final ApplicationContext context = new ClassPathXmlApplicationContext(
+            "spring/database.xml");
+
     private DataSource dataSource() {
-        ApplicationContext ctx = new ClassPathXmlApplicationContext("spring/database.xml");
-        return ctx.getBean("dataSource", DataSource.class);
+        return context.getBean("dataSource", DataSource.class);
     }
 
-    private void createTables(JdbcTemplate jdbcTemplate) {
-        jdbcTemplate.execute("DROP TABLE IF EXISTS accounts");
-        jdbcTemplate.execute("CREATE TABLE `accounts` ("
-                + "`id` BIGINT NOT NULL AUTO_INCREMENT,"
-                + "`email` VARCHAR(255) NOT NULL default '' UNIQUE,"
-                + "`status` TINYINT(1) NOT NULL default 0,"
-                + " PRIMARY KEY (`id`))");
-    }
-
-    private void dropTables(JdbcTemplate jdbcTemplate) {
-        jdbcTemplate.execute("DROP TABLE IF EXISTS accounts");
+    private void resetTables(JdbcTemplate jdbcTemplate) {
+        jdbcTemplate.update("TRUNCATE TABLE accounts");
+        jdbcTemplate.update("ALTER TABLE accounts ALTER COLUMN id RESTART WITH 1");
     }
 
     @Test
     public void testGeneratedKeyHolder() {
         JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource());
-        createTables(jdbcTemplate);
+        resetTables(jdbcTemplate);
 
         GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(
@@ -56,14 +53,12 @@ public class JdbcTemplateTest {
                     }
                 }, keyHolder);
         assertEquals(1L, keyHolder.getKey());
-
-        dropTables(jdbcTemplate);
     }
 
     @Test
     public void testSimpleJdbcInsert() {
         JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource());
-        createTables(jdbcTemplate);
+        resetTables(jdbcTemplate);
 
         SimpleJdbcInsert updater = new SimpleJdbcInsert(dataSource());
         updater.setTableName("accounts");
@@ -81,7 +76,29 @@ public class JdbcTemplateTest {
         assertEquals(id, row.get("id"));
         assertEquals("user1@example.net", row.get("email"));
         assertEquals((byte) 0, row.get("status"));
+    }
 
-        dropTables(jdbcTemplate);
+    @Test
+    public void testQueryForObject() {
+        JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource());
+        resetTables(jdbcTemplate);
+
+        jdbcTemplate.update("INSERT INTO accounts (id, email, status) VALUES (1, 'user1@example.net', 0)");
+        int count = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM accounts", Integer.class);
+        assertEquals(1, count);
+    }
+
+    @Test
+    public void testRowMapper() {
+        DataSource ds = dataSource();
+        JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+        resetTables(jdbcTemplate);
+
+        AccountDao dao = new JdbcAccountDao(ds);
+        assertNull(dao.find(123L));
+
+        jdbcTemplate.update("INSERT INTO accounts (id, email, status) VALUES (1, 'user1@example.net', 1)");
+        Account expected = new Account(1L, "user1@example.net", Account.Status.ACTIVE);
+        assertEquals(expected, dao.find(1L));
     }
 }
