@@ -1,78 +1,70 @@
 package com.github.tachesimazzoca.spring.examples.forum.models;
 
+import com.google.common.base.Optional;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 
 import javax.sql.DataSource;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.List;
-import java.util.NoSuchElementException;
+import java.util.Map;
 
-public class AccountDao {
+public class AccountDao extends AbstractDao<Account> {
     private static final AccountRowMapper ACCOUNT_ROW_MAPPER = new AccountRowMapper();
 
-    private final NamedParameterJdbcTemplate adapter;
-    private final SimpleJdbcInsert updater;
-
     public AccountDao(DataSource ds) {
-        adapter = new NamedParameterJdbcTemplate(ds);
-        updater = new SimpleJdbcInsert(ds)
-                .withTableName("accounts")
-                .usingColumns("email", "password_salt", "password_hash",
-                        "nickname", "status")
-                .usingGeneratedKeyColumns("id");
+        super(new JdbcTemplate(ds),
+                new SimpleJdbcInsert(ds)
+                        .withTableName("accounts")
+                        .usingColumns("email", "password_salt", "password_hash",
+                                "nickname", "status")
+                        .usingGeneratedKeyColumns("id"),
+                ACCOUNT_ROW_MAPPER);
     }
 
-    public Account find(Long id) {
-        List<Account> accountList = adapter.query("SELECT * FROM accounts WHERE id = :id",
-                new MapSqlParameterSource("id", id), ACCOUNT_ROW_MAPPER);
-        if (accountList.isEmpty())
-            throw new NoSuchElementException();
-        return accountList.get(0);
+    public Optional<Account> findByEmail(String email) {
+        List<Account> rowList = getJdbcTemplate().query(
+                "SELECT * FROM accounts WHERE email = ?", ACCOUNT_ROW_MAPPER, email);
+        if (rowList.isEmpty()) {
+            return Optional.absent();
+        } else {
+            return Optional.of(rowList.get(0));
+        }
     }
 
-    public Account create(Account account) {
-        MapSqlParameterSource params = new MapSqlParameterSource()
-                .addValue("email", account.email)
-                .addValue("password_salt", account.passwordSalt)
-                .addValue("password_hash", account.passwordHash)
-                .addValue("nickname", account.nickname)
-                .addValue("status", account.status.getValue());
-        Long id = (Long) updater.executeAndReturnKey(params);
-        return find(id);
+    public Account save(Account account) {
+        if (null == account.getId())
+            return create(account);
+        else
+            return update(account);
     }
 
-    public Account update(Account account) {
-        MapSqlParameterSource params = new MapSqlParameterSource()
-                .addValue("email", account.email)
-                .addValue("password_salt", account.passwordSalt)
-                .addValue("password_hash", account.passwordHash)
-                .addValue("nickname", account.nickname)
-                .addValue("status", account.status.getValue())
-                .addValue("id", account.id);
-        adapter.update("UPDATE accounts"
-                + " SET email = :email"
-                + ", password_salt = :password_salt"
-                + ", password_hash = :password_hash"
-                + ", nickname = :nickname"
-                + ", status = :status"
-                + " WHERE id = :id", params);
-        return find(account.id);
+    @Override
+    protected Map<String, ?> convertToMap(Account entity) {
+        Map<String, Object> entityMap = new HashMap<String, Object>();
+        entityMap.put("id", entity.getId());
+        entityMap.put("email", entity.getEmail());
+        entityMap.put("password_salt", entity.getPasswordSalt());
+        entityMap.put("password_hash", entity.getPasswordHash());
+        entityMap.put("nickname", entity.getNickname());
+        entityMap.put("status", entity.getStatus().getValue());
+        return entityMap;
     }
 
     private static final class AccountRowMapper implements RowMapper<Account> {
         @Override
         public Account mapRow(ResultSet resultSet, int i) throws SQLException {
-            return new Account(
-                    resultSet.getLong("id"),
-                    resultSet.getString("email"),
-                    resultSet.getString("password_salt"),
-                    resultSet.getString("password_hash"),
-                    resultSet.getString("nickname"),
-                    Account.Status.fromValue(resultSet.getInt("status")));
+            Account account = new Account();
+            account.setId(resultSet.getLong("id"));
+            account.setEmail(resultSet.getString("email"));
+            account.setPasswordSalt(resultSet.getString("password_salt"));
+            account.setPasswordHash(resultSet.getString("password_hash"));
+            account.setNickname(resultSet.getString("nickname"));
+            account.setStatus(Account.Status.fromValue(resultSet.getInt("status")));
+            return account;
         }
     }
 }

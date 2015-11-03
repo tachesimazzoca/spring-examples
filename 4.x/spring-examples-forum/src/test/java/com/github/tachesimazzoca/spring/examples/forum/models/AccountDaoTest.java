@@ -3,6 +3,7 @@ package com.github.tachesimazzoca.spring.examples.forum.models;
 import org.junit.Test;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.jdbc.core.JdbcTemplate;
 
 import javax.sql.DataSource;
 
@@ -16,21 +17,62 @@ public class AccountDaoTest {
         return context.getBean("dataSource", DataSource.class);
     }
 
-    @Test
-    public void testCRUD() {
-        AccountDao dao = new AccountDao(dataSource());
-        Account account = dao.create(
-                new Account(null, "user1@example.net", "", "", "user1", Account.Status.ACTIVE));
-        assertEquals(1L, account.id.longValue());
-        assertEquals("user1@example.net", account.email);
-        assertEquals("user1", account.nickname);
-        assertEquals(Account.Status.ACTIVE, account.status);
+    private void resetTables(DataSource ds) {
+        JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+        jdbcTemplate.execute("TRUNCATE TABLE accounts");
+        jdbcTemplate.execute("ALTER TABLE accounts ALTER COLUMN id RESTART WITH 1");
+    }
 
-        Account updatedAccount = dao.update(new Account(account.id, account.email,
-                account.passwordSalt, account.passwordHash, "user1-1", account.status.INACTIVE));
-        assertEquals(1L, updatedAccount.id.longValue());
-        assertEquals("user1@example.net", updatedAccount.email);
-        assertEquals("user1-1", updatedAccount.nickname);
-        assertEquals(Account.Status.INACTIVE, updatedAccount.status);
+    @Test
+    public void testSave() {
+        DataSource ds = dataSource();
+        resetTables(ds);
+
+        AccountDao dao = new AccountDao(ds);
+        Account account = new Account();
+        account.setEmail("user1@example.net");
+        account.setPasswordSalt("abcd");
+        account.setPasswordHash("");
+        account.setNickname("user1");
+        account.setStatus(Account.Status.ACTIVE);
+
+        account = dao.save(account);
+        assertEquals(1L, account.getId().longValue());
+        assertEquals("user1@example.net", account.getEmail());
+        assertEquals("abcd", account.getPasswordSalt());
+        assertEquals("", account.getPasswordHash());
+        assertEquals("user1", account.getNickname());
+        assertEquals(Account.Status.ACTIVE, account.getStatus());
+
+        account.setPasswordSalt("bcde");
+        account.setPasswordHash("hashedpw");
+        account.setStatus(Account.Status.INACTIVE);
+        account = dao.save(account);
+        assertEquals(1L, account.getId().longValue());
+        assertEquals("bcde", account.getPasswordSalt());
+        assertEquals("hashedpw", account.getPasswordHash());
+        assertEquals(Account.Status.INACTIVE, account.getStatus());
+    }
+
+    @Test
+    public void testFindByEmail() {
+        DataSource ds = dataSource();
+        resetTables(ds);
+
+        AccountDao dao = new AccountDao(ds);
+        Account account = new Account();
+        account.setEmail("user@example.net");
+        account.setPasswordSalt("salt");
+        account.setPasswordHash("pass");
+        account.setNickname("user");
+        account.setStatus(Account.Status.ACTIVE);
+        dao.save(account);
+
+        account = dao.findByEmail("user@example.net").get();
+        assertEquals(1L, account.getId().longValue());
+        assertEquals("user@example.net", account.getEmail());
+        assertEquals("salt", account.getPasswordSalt());
+        assertEquals("pass", account.getPasswordHash());
+        assertEquals("user", account.getNickname());
     }
 }

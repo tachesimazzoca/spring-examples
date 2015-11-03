@@ -1,21 +1,84 @@
 package com.github.tachesimazzoca.spring.examples.forum.models;
 
-public class Account {
-    public final Long id;
-    public final String email;
-    public final String passwordSalt;
-    public final String passwordHash;
-    public final String nickname;
-    public final Status status;
+import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.lang.RandomStringUtils;
 
-    public Account(Long id, String email, String passwordSalt, String passwordHash,
-                   String nickname, Status status) {
+public class Account {
+    private static final int PASSWORD_SALT_LENGTH = 4;
+    private Long id;
+    private String email;
+    private String passwordSalt;
+    private String passwordHash;
+    private String nickname;
+    private Status status;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
         this.id = id;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getPasswordSalt() {
+        return passwordSalt;
+    }
+
+    public void setPasswordSalt(String passwordSalt) {
         this.passwordSalt = passwordSalt;
+    }
+
+    public String getPasswordHash() {
+        return passwordHash;
+    }
+
+    public void setPasswordHash(String passwordHash) {
         this.passwordHash = passwordHash;
+    }
+
+    public String getNickname() {
+        return nickname;
+    }
+
+    public void setNickname(String nickname) {
         this.nickname = nickname;
+    }
+
+    public Status getStatus() {
+        return status;
+    }
+
+    public void setStatus(Status status) {
         this.status = status;
+    }
+
+    public void refreshPassword(String password) {
+        setPasswordSalt(RandomStringUtils.randomAlphanumeric(PASSWORD_SALT_LENGTH));
+        setPasswordHash(hashPassword(password, getPasswordSalt()));
+    }
+
+    public void refreshPassword(String password, String salt) {
+        if (salt == null || salt.length() != PASSWORD_SALT_LENGTH)
+            throw new IllegalArgumentException(
+                    "The length of the parameter salt must be equal to " + PASSWORD_SALT_LENGTH);
+        setPasswordSalt(salt);
+        setPasswordHash(hashPassword(password, getPasswordSalt()));
+    }
+
+    public boolean isEqualPassword(String password) {
+        return hashPassword(password, getPasswordSalt()).equals(getPasswordHash());
+    }
+
+    private String hashPassword(String password, String salt) {
+        return DigestUtils.sha1Hex(salt + password);
     }
 
     @Override
