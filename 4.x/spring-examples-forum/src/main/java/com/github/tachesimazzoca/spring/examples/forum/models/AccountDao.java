@@ -4,6 +4,7 @@ import com.google.common.base.Optional;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 
 import javax.sql.DataSource;
 import java.sql.ResultSet;
@@ -12,11 +13,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class AccountDao extends AbstractDao<Account> {
+public class AccountDao extends JdbcTemplateDao<Account> {
     private static final AccountRowMapper ACCOUNT_ROW_MAPPER = new AccountRowMapper();
 
     public AccountDao(DataSource ds) {
-        super(new JdbcTemplate(ds),
+        super(new DataSourceTransactionManager(ds),
+                new JdbcTemplate(ds),
                 new SimpleJdbcInsert(ds)
                         .withTableName("accounts")
                         .usingColumns("email", "password_salt", "password_hash",

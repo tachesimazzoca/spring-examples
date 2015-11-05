@@ -5,18 +5,25 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.DefaultTransactionDefinition;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public abstract class AbstractDao<T> {
+public abstract class JdbcTemplateDao<T> {
+    private final PlatformTransactionManager transactionManager;
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert jdbcInsert;
     private final RowMapper<T> rowMapper;
 
-    protected AbstractDao(JdbcTemplate jdbcTemplate, SimpleJdbcInsert jdbcInsert,
-                          RowMapper<T> rowMapper) {
+    protected JdbcTemplateDao(PlatformTransactionManager transactionManager,
+                              JdbcTemplate jdbcTemplate,
+                              SimpleJdbcInsert jdbcInsert,
+                              RowMapper<T> rowMapper) {
+        this.transactionManager = transactionManager;
         this.jdbcTemplate = jdbcTemplate;
         this.jdbcInsert = jdbcInsert;
         this.rowMapper = rowMapper;
@@ -43,6 +50,9 @@ public abstract class AbstractDao<T> {
     }
 
     public T create(T entity) {
+        TransactionStatus status = transactionManager.getTransaction(
+                new DefaultTransactionDefinition());
+
         final Map<String, ?> entityMap = convertToMap(entity);
         final List<String> updateColumns = jdbcInsert.getColumnNames();
 
@@ -50,10 +60,17 @@ public abstract class AbstractDao<T> {
         for (String column : updateColumns) {
             params.addValue(column, entityMap.get(column));
         }
-        return find(jdbcInsert.executeAndReturnKey(params)).get();
+
+        Number id = jdbcInsert.executeAndReturnKey(params);
+        transactionManager.commit(status);
+
+        return find(id).get();
     }
 
     public T update(T entity) {
+        TransactionStatus status = transactionManager.getTransaction(
+                new DefaultTransactionDefinition());
+
         Map<String, ?> entityMap = convertToMap(entity);
         String idColumn = jdbcInsert.getGeneratedKeyNames()[0];
         Number idValue = (Number) entityMap.get(idColumn);
@@ -82,6 +99,7 @@ public abstract class AbstractDao<T> {
         valueList.add(idValue);
 
         jdbcTemplate.update(sql.toString(), valueList.toArray(new Object[valueList.size()]));
+        transactionManager.commit(status);
 
         return find(idValue).get();
     }
