@@ -28,11 +28,11 @@ public class AccountDao extends JdbcTemplateDao<Account> {
         }
     }
 
-    public Account save(Account account) {
-        if (null == account.getId())
-            return create(account);
+    public Account save(Account entity) {
+        if (null == entity.getId())
+            return create(entity);
         else
-            return update(account);
+            return update(entity);
     }
 
     @Override

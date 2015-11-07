@@ -16,7 +16,7 @@ public class AccountDaoTest {
             "spring/database.xml");
 
     private DataSource dataSource() {
-        return context.getBean("dataSource", DataSource.class);
+        return context.getBean("testDataSource", DataSource.class);
     }
 
     private void resetTables(DataSource ds) {
@@ -71,7 +71,7 @@ public class AccountDaoTest {
         dao.save(account);
 
         account = dao.findByEmail("user@example.net").get();
-        assertEquals(1L, account.getId().longValue());
+        assertNotNull(account.getId());
         assertEquals("user@example.net", account.getEmail());
         assertEquals("salt", account.getPasswordSalt());
         assertEquals("pass", account.getPasswordHash());

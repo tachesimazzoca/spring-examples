@@ -16,7 +16,7 @@ public class JdbcTemplateStorageTest {
             "spring/database.xml");
 
     private DataSource dataSource() {
-        return context.getBean("dataSource", DataSource.class);
+        return context.getBean("testDataSource", DataSource.class);
     }
 
     private void resetTables(DataSource ds) {
