@@ -9,7 +9,7 @@ import javax.sql.DataSource;
 
 import static org.junit.Assert.*;
 
-public class QuestionDaoTest {
+public class AnswerDaoTest {
     private static ApplicationContext context = new ClassPathXmlApplicationContext(
             "spring/database.xml");
 
@@ -30,22 +30,24 @@ public class QuestionDaoTest {
 
         long time = System.currentTimeMillis();
 
-        QuestionDao dao = new QuestionDao(ds);
-        Question question = new Question();
-        question.setAuthorId(2L);
-        question.setStatus(Question.Status.PUBLISHED);
-        question.setPostedAt(new java.util.Date(time));
-        Question savedQuestion = dao.save(question);
+        AnswerDao dao = new AnswerDao(ds);
+        Answer answer = new Answer();
+        answer.setQuestionId(2L);
+        answer.setAuthorId(3L);
+        answer.setStatus(Answer.Status.PUBLISHED);
+        answer.setPostedAt(new java.util.Date(time));
+        Answer savedAnswer = dao.save(answer);
 
-        Long id = savedQuestion.getId();
+        Long id = savedAnswer.getId();
         assertNotNull(id);
-        assertEquals(2L, savedQuestion.getAuthorId().longValue());
-        assertEquals(Question.Status.PUBLISHED, savedQuestion.getStatus());
-        assertEquals(time, savedQuestion.getPostedAt().getTime());
+        assertEquals(2L, savedAnswer.getQuestionId().longValue());
+        assertEquals(3L, savedAnswer.getAuthorId().longValue());
+        assertEquals(Answer.Status.PUBLISHED, savedAnswer.getStatus());
+        assertEquals(time, savedAnswer.getPostedAt().getTime());
 
-        dao.updateStatus(id, Question.Status.DRAFT);
-        Question updatedQuestion = dao.find(id).get();
-        assertEquals(id, updatedQuestion.getId());
-        assertEquals(Question.Status.DRAFT, updatedQuestion.getStatus());
+        dao.updateStatus(id, Answer.Status.DRAFT);
+        Answer updatedAnswer = dao.find(id).get();
+        assertEquals(id, updatedAnswer.getId());
+        assertEquals(Answer.Status.DRAFT, updatedAnswer.getStatus());
     }
 }
