@@ -1,17 +1,16 @@
 package com.github.tachesimazzoca.spring.examples.forum.models;
 
 import com.github.tachesimazzoca.spring.examples.forum.util.ObjectSerializer;
-import com.google.common.base.Optional;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
-import org.springframework.transaction.support.DefaultTransactionStatus;
 
 import javax.sql.DataSource;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 public class JdbcTemplateStorage implements Storage<Map<String, Object>> {
@@ -54,6 +53,7 @@ public class JdbcTemplateStorage implements Storage<Map<String, Object>> {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public Optional<Map<String, Object>> read(String key) {
         List<Map<String, Object>> rowList = jdbcTemplate.queryForList(SELECT_QUERY, key);
         Map<String, Object> v = null;
@@ -70,7 +70,7 @@ public class JdbcTemplateStorage implements Storage<Map<String, Object>> {
         if (v != null)
             return Optional.of(v);
         else
-            return Optional.absent();
+            return Optional.empty();
     }
 
     @Override

@@ -1,36 +1,45 @@
 package com.github.tachesimazzoca.spring.examples.forum.models;
 
-import com.google.common.base.Optional;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
 
+import javax.sql.DataSource;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 public abstract class JdbcTemplateDao<T> {
     private final PlatformTransactionManager transactionManager;
-    private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert jdbcInsert;
     private final RowMapper<T> rowMapper;
 
-    protected JdbcTemplateDao(PlatformTransactionManager transactionManager,
-                              JdbcTemplate jdbcTemplate,
-                              SimpleJdbcInsert jdbcInsert,
-                              RowMapper<T> rowMapper) {
-        this.transactionManager = transactionManager;
-        this.jdbcTemplate = jdbcTemplate;
-        this.jdbcInsert = jdbcInsert;
-        this.rowMapper = rowMapper;
+    protected JdbcTemplateDao(DataSource dataSource,
+                              String tableName,
+                              String[] columns,
+                              String generatedKeyColumn) {
+        transactionManager = new DataSourceTransactionManager(dataSource);
+        jdbcInsert = new SimpleJdbcInsert(dataSource)
+                .withTableName(tableName)
+                .usingColumns(columns)
+                .usingGeneratedKeyColumns(generatedKeyColumn);
+        rowMapper = new InnerRowMapper();
     }
 
     public JdbcTemplate getJdbcTemplate() {
-        return jdbcTemplate;
+        return jdbcInsert.getJdbcTemplate();
+    }
+
+    public RowMapper<T> getRowMapper() {
+        return rowMapper;
     }
 
     public Optional<T> find(Number id) {
@@ -41,11 +50,12 @@ public abstract class JdbcTemplateDao<T> {
         sb.append(" WHERE ");
         sb.append(idColumn);
         sb.append(" = ?");
-        List<T> rowList = jdbcTemplate.query(sb.toString(), rowMapper, id);
-        if (rowList.isEmpty()) {
-            return Optional.absent();
-        } else {
+        List<T> rowList = jdbcInsert.getJdbcTemplate().query(
+                sb.toString(), rowMapper, id);
+        if (!rowList.isEmpty()) {
             return Optional.of(rowList.get(0));
+        } else {
+            return Optional.empty();
         }
     }
 
@@ -53,7 +63,7 @@ public abstract class JdbcTemplateDao<T> {
         TransactionStatus status = transactionManager.getTransaction(
                 new DefaultTransactionDefinition());
 
-        final Map<String, ?> entityMap = convertToMap(entity);
+        final Map<String, ?> entityMap = convertEntityToMap(entity);
         final List<String> updateColumns = jdbcInsert.getColumnNames();
 
         MapSqlParameterSource params = new MapSqlParameterSource();
@@ -71,7 +81,7 @@ public abstract class JdbcTemplateDao<T> {
         TransactionStatus status = transactionManager.getTransaction(
                 new DefaultTransactionDefinition());
 
-        Map<String, ?> entityMap = convertToMap(entity);
+        Map<String, ?> entityMap = convertEntityToMap(entity);
         String idColumn = jdbcInsert.getGeneratedKeyNames()[0];
         Number idValue = (Number) entityMap.get(idColumn);
 
@@ -84,7 +94,7 @@ public abstract class JdbcTemplateDao<T> {
         int n = 0;
         for (Map.Entry<String, ?> kv : entityMap.entrySet()) {
             String key = kv.getKey();
-            if (idColumn == key)
+            if (idColumn.equals(key))
                 continue;
             if (n > 0)
                 sql.append(", ");
@@ -98,11 +108,20 @@ public abstract class JdbcTemplateDao<T> {
         sql.append(" = ?");
         valueList.add(idValue);
 
-        jdbcTemplate.update(sql.toString(), valueList.toArray(new Object[valueList.size()]));
+        jdbcInsert.getJdbcTemplate().update(
+                sql.toString(), valueList.toArray(new Object[valueList.size()]));
         transactionManager.commit(status);
 
         return find(idValue).get();
     }
 
-    abstract protected Map<String, ?> convertToMap(T entity);
+    abstract protected Map<String, ?> convertEntityToMap(T entity);
+    abstract protected T convertResultSetToEntity(ResultSet resultSet) throws SQLException;
+
+    private final class InnerRowMapper implements RowMapper<T> {
+        @Override
+        public T mapRow(ResultSet resultSet, int i) throws SQLException {
+            return convertResultSetToEntity(resultSet);
+        }
+    }
 }

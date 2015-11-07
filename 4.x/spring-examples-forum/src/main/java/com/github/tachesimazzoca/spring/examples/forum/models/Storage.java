@@ -1,6 +1,6 @@
 package com.github.tachesimazzoca.spring.examples.forum.models;
 
-import com.google.common.base.Optional;
+import java.util.Optional;
 
 public interface Storage<T> {
     public String create(T value);

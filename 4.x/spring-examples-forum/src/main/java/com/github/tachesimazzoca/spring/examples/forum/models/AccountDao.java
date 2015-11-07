@@ -1,39 +1,30 @@
 package com.github.tachesimazzoca.spring.examples.forum.models;
 
-import com.google.common.base.Optional;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
-import org.springframework.jdbc.datasource.DataSourceTransactionManager;
-
 import javax.sql.DataSource;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 public class AccountDao extends JdbcTemplateDao<Account> {
-    private static final AccountRowMapper ACCOUNT_ROW_MAPPER = new AccountRowMapper();
+    public static final String TABLE_NAME = "accounts";
+    public static final String[] COLUMNS = {
+            "email", "password_salt", "password_hash", "nickname", "status" };
+    public static final String GENERATED_KEY_COLUMN = "id";
 
-    public AccountDao(DataSource ds) {
-        super(new DataSourceTransactionManager(ds),
-                new JdbcTemplate(ds),
-                new SimpleJdbcInsert(ds)
-                        .withTableName("accounts")
-                        .usingColumns("email", "password_salt", "password_hash",
-                                "nickname", "status")
-                        .usingGeneratedKeyColumns("id"),
-                ACCOUNT_ROW_MAPPER);
+    public AccountDao(DataSource dataSource) {
+        super(dataSource, TABLE_NAME, COLUMNS, GENERATED_KEY_COLUMN);
     }
 
     public Optional<Account> findByEmail(String email) {
         List<Account> rowList = getJdbcTemplate().query(
-                "SELECT * FROM accounts WHERE email = ?", ACCOUNT_ROW_MAPPER, email);
-        if (rowList.isEmpty()) {
-            return Optional.absent();
-        } else {
+                "SELECT * FROM accounts WHERE email = ?", getRowMapper(), email);
+        if (!rowList.isEmpty()) {
             return Optional.of(rowList.get(0));
+        } else {
+            return Optional.empty();
         }
     }
 
@@ -45,7 +36,7 @@ public class AccountDao extends JdbcTemplateDao<Account> {
     }
 
     @Override
-    protected Map<String, ?> convertToMap(Account entity) {
+    protected Map<String, ?> convertEntityToMap(Account entity) {
         Map<String, Object> entityMap = new HashMap<String, Object>();
         entityMap.put("id", entity.getId());
         entityMap.put("email", entity.getEmail());
@@ -56,17 +47,15 @@ public class AccountDao extends JdbcTemplateDao<Account> {
         return entityMap;
     }
 
-    private static final class AccountRowMapper implements RowMapper<Account> {
-        @Override
-        public Account mapRow(ResultSet resultSet, int i) throws SQLException {
-            Account account = new Account();
-            account.setId(resultSet.getLong("id"));
-            account.setEmail(resultSet.getString("email"));
-            account.setPasswordSalt(resultSet.getString("password_salt"));
-            account.setPasswordHash(resultSet.getString("password_hash"));
-            account.setNickname(resultSet.getString("nickname"));
-            account.setStatus(Account.Status.fromValue(resultSet.getInt("status")));
-            return account;
-        }
+    @Override
+    public Account convertResultSetToEntity(ResultSet resultSet) throws SQLException {
+        Account account = new Account();
+        account.setId(resultSet.getLong("id"));
+        account.setEmail(resultSet.getString("email"));
+        account.setPasswordSalt(resultSet.getString("password_salt"));
+        account.setPasswordHash(resultSet.getString("password_hash"));
+        account.setNickname(resultSet.getString("nickname"));
+        account.setStatus(Account.Status.fromValue(resultSet.getInt("status")));
+        return account;
     }
 }

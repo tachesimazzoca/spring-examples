@@ -7,6 +7,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 
 import javax.sql.DataSource;
 
+import java.util.Optional;
+
 import static org.junit.Assert.*;
 
 public class AccountDaoTest {
