@@ -1,9 +1,11 @@
 package com.github.tachesimazzoca.spring.examples.forum.models;
 
 import org.junit.Test;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import javax.sql.DataSource;
 import java.util.HashMap;
@@ -11,26 +13,23 @@ import java.util.Map;
 
 import static org.junit.Assert.*;
 
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations = "classpath:/spring/test-application.xml")
 public class JdbcTemplateStorageTest {
-    private static ApplicationContext context = new ClassPathXmlApplicationContext(
-            "spring/database.xml");
+    @Autowired
+    private DataSource dataSource;
 
-    private DataSource dataSource() {
-        return context.getBean("testDataSource", DataSource.class);
-    }
-
-    private void resetTables(DataSource ds) {
-        JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+    private void resetTables() {
+        JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
         jdbcTemplate.execute("TRUNCATE TABLE session_storage");
     }
 
     @Test
     public void testCreateAndRead() {
-        DataSource ds = dataSource();
-        resetTables(ds);
+        resetTables();
 
         Storage<Map<String, Object>> storage = new JdbcTemplateStorage(
-                ds, "session_storage", "user-");
+                dataSource, "session_storage", "user-");
 
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("id", 1234L);

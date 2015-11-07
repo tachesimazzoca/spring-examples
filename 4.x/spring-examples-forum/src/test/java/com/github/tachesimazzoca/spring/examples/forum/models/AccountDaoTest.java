@@ -1,36 +1,33 @@
 package com.github.tachesimazzoca.spring.examples.forum.models;
 
 import org.junit.Test;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import javax.sql.DataSource;
 
-import java.util.Optional;
-
 import static org.junit.Assert.*;
 
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations = "classpath:/spring/test-application.xml")
 public class AccountDaoTest {
-    private static ApplicationContext context = new ClassPathXmlApplicationContext(
-            "spring/database.xml");
+    @Autowired
+    private DataSource dataSource;
 
-    private DataSource dataSource() {
-        return context.getBean("testDataSource", DataSource.class);
-    }
-
-    private void resetTables(DataSource ds) {
-        JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+    private void resetTables() {
+        JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
         jdbcTemplate.execute("TRUNCATE TABLE accounts");
         jdbcTemplate.execute("ALTER TABLE accounts ALTER COLUMN id RESTART WITH 1");
     }
 
     @Test
     public void testSave() {
-        DataSource ds = dataSource();
-        resetTables(ds);
+        resetTables();
 
-        AccountDao dao = new AccountDao(ds);
+        AccountDao dao = new AccountDao(dataSource);
         Account account = new Account();
         account.setEmail("user1@example.net");
         account.setPasswordSalt("abcd");
@@ -58,10 +55,9 @@ public class AccountDaoTest {
 
     @Test
     public void testFindByEmail() {
-        DataSource ds = dataSource();
-        resetTables(ds);
+        resetTables();
 
-        AccountDao dao = new AccountDao(ds);
+        AccountDao dao = new AccountDao(dataSource);
         Account account = new Account();
         account.setEmail("user@example.net");
         account.setPasswordSalt("salt");
