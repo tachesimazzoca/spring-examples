@@ -11,10 +11,10 @@ public class QuestionResult {
     private Question.Status status;
     private Long authorId;
     private String nickname;
-    private Integer numAnswers = 0;
-    private Integer sumPoints = 0;
-    private Integer positivePoints = 0;
-    private Integer negativePoints = 0;
+    private Integer numAnswers;
+    private Integer sumPoints;
+    private Integer positivePoints;
+    private Integer negativePoints;
 
     public enum OrderBy {
         POSTED_AT_DESC("posted_at_desc",

@@ -74,5 +74,6 @@ public class QuestionResultDaoTest {
         Pagination<QuestionResult> pagination = questionResultDao.selectPublicQuestions(
                 numQuestions, limit, QuestionResult.OrderBy.POSTED_AT_DESC);
         assertEquals(((numQuestions - 1) / limit * limit), pagination.getOffset());
+        pagination.getResults().forEach(System.out::println);
     }
 }

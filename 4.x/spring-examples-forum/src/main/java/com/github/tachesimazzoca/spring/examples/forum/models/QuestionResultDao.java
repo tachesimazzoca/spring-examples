@@ -6,8 +6,6 @@ import org.springframework.jdbc.core.RowMapper;
 import javax.sql.DataSource;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Collections;
-import java.util.List;
 
 public class QuestionResultDao {
     private static final QuestionResultRowMapper ROW_MAPPER = new QuestionResultRowMapper();
@@ -48,53 +46,29 @@ public class QuestionResultDao {
 
     public Pagination<QuestionResult> selectPublicQuestions(
             int offset, int limit, QuestionResult.OrderBy orderBy) {
-        String where = " WHERE questions.status = 0";
+        final String where = " WHERE questions.status = 0";
+        final String countQuery = COUNT_QUESTION_RESULT + where;
+        final String selectQuery = SELECT_QUESTION_RESULT + where
+                + " ORDER BY " + orderBy.getClause();
 
-        String countQuery = COUNT_QUESTION_RESULT + where;
-        Long count = jdbcTemplate.queryForObject(countQuery, Long.class);
-        if (null == count || 0L == count) {
-            return new Pagination(Collections.EMPTY_LIST, 0, limit, 0);
-        }
-
-        int first = offset;
-        if (first >= count) {
-            if (count > 0)
-                first = (int) ((count - 1) / limit) * limit;
-            else
-                first = 0;
-        }
-        String selectQuery = String.format("%s ORDER BY %s LIMIT %d, %d",
-                SELECT_QUESTION_RESULT + where,
-                orderBy.getClause(),
-                first, limit);
-        List<QuestionResult> results = jdbcTemplate.query(selectQuery, ROW_MAPPER);
-
-        return new Pagination(results, first, limit, count);
+        return Pagination.paginate(offset, limit,
+                () -> jdbcTemplate.queryForObject(countQuery, Long.class),
+                (theOffset, theLimit) -> jdbcTemplate.query(
+                        String.format(selectQuery + " LIMIT %d, %d", theOffset, theLimit),
+                        ROW_MAPPER));
     }
 
-    public Pagination<QuestionResult> selectByAuthorId(Long authorId, int offset, int limit) {
-        String where = " WHERE questions.status IN (0, 2) AND questions.author_id = ?";
+    public Pagination<QuestionResult> selectByAuthorId(final Long authorId, int offset, int limit) {
+        final String where = " WHERE questions.status IN (0, 2) AND questions.author_id = ?";
+        final String countQuery = COUNT_QUESTION_RESULT + where;
+        final String selectQuery = SELECT_QUESTION_RESULT + where
+                + " ORDER BY " + QuestionResult.OrderBy.defaultValue().getClause();
 
-        String countQuery = COUNT_QUESTION_RESULT + where;
-        Long count = jdbcTemplate.queryForObject(countQuery, Long.class, authorId);
-        if (null == count || 0L == count) {
-            return new Pagination(Collections.EMPTY_LIST, 0, limit, 0);
-        }
-
-        int first = offset;
-        if (first >= count) {
-            if (count > 0)
-                first = (int) ((count - 1) / limit) * limit;
-            else
-                first = 0;
-        }
-        String selectQuery = String.format("%s ORDER BY %s LIMIT %d, %d",
-                SELECT_QUESTION_RESULT + where,
-                QuestionResult.OrderBy.defaultValue().getClause(),
-                first, limit);
-        List<QuestionResult> results = jdbcTemplate.query(selectQuery, ROW_MAPPER, authorId);
-
-        return new Pagination(results, first, limit, count);
+        return Pagination.paginate(offset, limit,
+                () -> jdbcTemplate.queryForObject(countQuery, Long.class, authorId),
+                (theOffset, theLimit) -> jdbcTemplate.query(
+                        String.format(selectQuery + " LIMIT %d, %d", theOffset, theLimit),
+                        ROW_MAPPER, authorId));
     }
 
     private static final class QuestionResultRowMapper implements RowMapper<QuestionResult> {
