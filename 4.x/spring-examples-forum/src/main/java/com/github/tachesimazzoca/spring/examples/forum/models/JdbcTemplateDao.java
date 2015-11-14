@@ -116,6 +116,7 @@ public abstract class JdbcTemplateDao<T> {
     }
 
     abstract protected Map<String, ?> convertEntityToMap(T entity);
+
     abstract protected T convertResultSetToEntity(ResultSet resultSet) throws SQLException;
 
     private final class InnerRowMapper implements RowMapper<T> {
