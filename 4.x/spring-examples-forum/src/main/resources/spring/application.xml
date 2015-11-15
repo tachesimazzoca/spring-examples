@@ -31,10 +31,14 @@
     </jdbc:initialize-database>
 
     <!-- storage -->
-    <bean id="verificationStorage"
-          class="com.github.tachesimazzoca.spring.examples.forum.models.JdbcTemplateStorage">
+    <bean id="storageEngine"
+          class="com.github.tachesimazzoca.spring.examples.forum.storage.JdbcTemplateStorageEngine">
         <constructor-arg ref="dataSource"/>
         <constructor-arg value="session_storage"/>
+    </bean>
+    <bean id="verificationStorage"
+          class="com.github.tachesimazzoca.spring.examples.forum.storage.MultiValueMapStorage">
+        <constructor-arg ref="storageEngine"/>
         <constructor-arg value="verification-"/>
     </bean>
 

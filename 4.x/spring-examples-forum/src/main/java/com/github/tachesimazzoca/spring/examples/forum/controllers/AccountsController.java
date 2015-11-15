@@ -1,20 +1,24 @@
 package com.github.tachesimazzoca.spring.examples.forum.controllers;
 
 import com.github.tachesimazzoca.spring.examples.forum.config.Config;
+import com.github.tachesimazzoca.spring.examples.forum.models.Account;
 import com.github.tachesimazzoca.spring.examples.forum.models.AccountDao;
-import com.github.tachesimazzoca.spring.examples.forum.models.Storage;
+import com.github.tachesimazzoca.spring.examples.forum.storage.MultiValueMapStorage;
 import com.github.tachesimazzoca.spring.examples.forum.views.AccountsEntryForm;
 import com.github.tachesimazzoca.spring.examples.forum.views.helpers.FormHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -23,10 +27,9 @@ import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.logging.Logger;
-
-import static com.github.tachesimazzoca.spring.examples.forum.util.ParameterUtils.*;
 
 @Controller
 @RequestMapping(value = "/accounts")
@@ -44,7 +47,7 @@ public class AccountsController {
 
     @Autowired
     @Qualifier("verificationStorage")
-    private Storage verificationStorage;
+    private MultiValueMapStorage verificationStorage;
 
     @RequestMapping(value = "/errors/{name}", method = RequestMethod.GET)
     @ResponseStatus(HttpStatus.FORBIDDEN)
@@ -53,10 +56,9 @@ public class AccountsController {
     }
 
     @RequestMapping(value = "/entry", method = RequestMethod.GET)
-    public ModelAndView entry() {
-        ModelAndView view = new ModelAndView("accounts/entry");
-        view.addObject("form", new FormHelper(AccountsEntryForm.defaultForm()));
-        return view;
+    public String entry(Model model) {
+        model.addAttribute("form", new FormHelper(AccountsEntryForm.defaultForm()));
+        return "accounts/entry";
     }
 
     @RequestMapping(value = "/entry", method = RequestMethod.POST)
@@ -82,11 +84,11 @@ public class AccountsController {
             throw new ValidatorException(view);
         }
 
-        // Store the parameters temporally
-        Map<String, Object> params = params(
-                "email", form.getEmail(),
-                "password", form.getPassword());
-        String code = verificationStorage.create(params);
+        // Store the parameters temporarily
+        MultiValueMap<String, String> valueMap = new LinkedMultiValueMap<String, String>();
+        valueMap.add("email", form.getEmail());
+        valueMap.add("password", form.getPassword());
+        String code = verificationStorage.create(valueMap);
         String url = UriComponentsBuilder.fromUriString((String) config.get("url.http"))
                 .path(config.get("url.basedir") + "/accounts/activate")
                 .queryParam("code", code)
@@ -94,6 +96,30 @@ public class AccountsController {
         LOGGER.info(url);
 
         return "accounts/verify";
+    }
+
+    @RequestMapping(value = "/activate", method = RequestMethod.GET)
+    public String activate(@RequestParam("code") String code, Model model) {
+        Optional<MultiValueMap<String, String>> valueMapOpt = verificationStorage.read(code);
+        if (!valueMapOpt.isPresent()) {
+            return "redirect:/accounts/errors/session";
+        }
+
+        Map<String, String> params = valueMapOpt.get().toSingleValueMap();
+        if (accountDao.findByEmail(params.get("email")).isPresent()) {
+            // The email has been registered
+            return "redirect:/accounts/errors/email";
+        }
+
+        Account account = new Account();
+        account.setEmail(params.get("email"));
+        account.setNickname("");
+        account.setStatus(Account.Status.ACTIVE);
+        account.refreshPassword(params.get("password"));
+        Account savedAccount = accountDao.save(account);
+        model.addAttribute("account", savedAccount);
+
+        return "accounts/activate";
     }
 
     public class ValidatorException extends Exception {

@@ -1,5 +1,6 @@
-package com.github.tachesimazzoca.spring.examples.forum.models;
+package com.github.tachesimazzoca.spring.examples.forum.storage;
 
+import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,14 +9,13 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import javax.sql.DataSource;
-import java.util.HashMap;
-import java.util.Map;
+import java.io.IOException;
 
 import static org.junit.Assert.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = "classpath:/spring/test-application.xml")
-public class JdbcTemplateStorageTest {
+public class JdbcTemplateStorageEngineTest {
     @Autowired
     private DataSource dataSource;
 
@@ -25,20 +25,17 @@ public class JdbcTemplateStorageTest {
     }
 
     @Test
-    public void testCreateAndRead() {
+    public void testWriteAndRead() throws IOException {
         resetTables();
 
-        Storage<Map<String, Object>> storage = new JdbcTemplateStorage(
-                dataSource, "session_storage", "user-");
+        StorageEngine engine = new JdbcTemplateStorageEngine(dataSource, "session_storage");
 
-        Map<String, Object> params = new HashMap<String, Object>();
-        params.put("id", 1234L);
-        params.put("name", "foo");
-        String key = storage.create(params);
-        Map<String, Object> saved = storage.read(key).get();
-        assertEquals(params, saved);
+        final String key = "a";
+        final String data = "foo=bar&baz=qux";
+        engine.write(key, IOUtils.toInputStream(data));
+        assertEquals(data, IOUtils.toString(engine.read(key).get()));
 
-        storage.delete(key);
-        assertFalse(storage.read(key).isPresent());
+        engine.delete(key);
+        assertFalse(engine.read(key).isPresent());
     }
 }

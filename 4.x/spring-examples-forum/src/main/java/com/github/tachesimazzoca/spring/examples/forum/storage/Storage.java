@@ -1,4 +1,4 @@
-package com.github.tachesimazzoca.spring.examples.forum.models;
+package com.github.tachesimazzoca.spring.examples.forum.storage;
 
 import java.util.Optional;
 

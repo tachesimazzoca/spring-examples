@@ -1,6 +1,7 @@
-package com.github.tachesimazzoca.spring.examples.forum.models;
+package com.github.tachesimazzoca.spring.examples.forum.storage;
 
-import com.github.tachesimazzoca.spring.examples.forum.util.ObjectSerializer;
+import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.io.IOUtils;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -8,12 +9,13 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
 
 import javax.sql.DataSource;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.UUID;
 
-public class JdbcTemplateStorage implements Storage<Map<String, Object>> {
+public class JdbcTemplateStorageEngine implements StorageEngine {
     private final PlatformTransactionManager transactionManager;
     private final JdbcTemplate jdbcTemplate;
     private final String INSERT_QUERY;
@@ -21,12 +23,10 @@ public class JdbcTemplateStorage implements Storage<Map<String, Object>> {
     private final String DELETE_QUERY;
     private final String SELECT_QUERY;
     private final String SELECT_FOR_UPDATE_QUERY;
-    private final String prefix;
 
-    public JdbcTemplateStorage(DataSource ds, String table, String prefix) {
+    public JdbcTemplateStorageEngine(DataSource ds, String table) {
         transactionManager = new DataSourceTransactionManager(ds);
         jdbcTemplate = new JdbcTemplate(ds);
-        this.prefix = prefix;
 
         INSERT_QUERY = "INSERT INTO " + table
                 + " (storage_key, storage_value, storage_timestamp)"
@@ -46,52 +46,54 @@ public class JdbcTemplateStorage implements Storage<Map<String, Object>> {
     }
 
     @Override
-    public String create(Map<String, Object> value) {
-        String key = prefix + UUID.randomUUID().toString();
-        write(key, value);
-        return key;
-    }
+    public Optional<InputStream> read(String key) {
+        if (null == key)
+            throw new NullPointerException("The parameter key must be not null.");
 
-    @Override
-    @SuppressWarnings("unchecked")
-    public Optional<Map<String, Object>> read(String key) {
         List<Map<String, Object>> rowList = jdbcTemplate.queryForList(SELECT_QUERY, key);
-        Map<String, Object> v = null;
-        if (!rowList.isEmpty()) {
-            try {
-                String encoded = (String) rowList.get(0).get("storage_value");
-                v = (Map<String, Object>) ObjectSerializer.BASE64.deserialize(encoded, Map.class);
-            } catch (Exception e) {
-                // fail gracefully if the storage value is corrupted or type
-                // mismatch.
-                v = null;
-            }
-        }
-        if (v != null)
-            return Optional.of(v);
-        else
+        if (rowList.isEmpty()) {
             return Optional.empty();
+        } else {
+            byte[] decoded = Base64.decodeBase64((String) rowList.get(0).get("storage_value"));
+            return Optional.of(new ByteArrayInputStream(decoded));
+        }
     }
 
     @Override
-    public void write(String key, Map<String, Object> value) {
+    public void write(String key, InputStream value) {
+        if (null == key)
+            throw new NullPointerException("The parameter key must be not null.");
+
         TransactionStatus status = transactionManager.getTransaction(
                 new DefaultTransactionDefinition());
-        String encoded = ObjectSerializer.BASE64.serialize(value);
-        List<Map<String, Object>> rowList = jdbcTemplate.queryForList(SELECT_FOR_UPDATE_QUERY, key);
-        if (rowList.isEmpty()) {
-            jdbcTemplate.update(INSERT_QUERY, key, encoded);
-        } else {
-            jdbcTemplate.update(UPDATE_QUERY, key, encoded);
+        try {
+            String encoded = Base64.encodeBase64String(IOUtils.toByteArray(value));
+            List<Map<String, Object>> rowList = jdbcTemplate.queryForList(SELECT_FOR_UPDATE_QUERY, key);
+            if (rowList.isEmpty()) {
+                jdbcTemplate.update(INSERT_QUERY, key, encoded);
+            } else {
+                jdbcTemplate.update(UPDATE_QUERY, key, encoded);
+            }
+        } catch (Exception e) {
+            transactionManager.rollback(status);
+            throw new RuntimeException(e);
         }
         transactionManager.commit(status);
     }
 
     @Override
     public void delete(String key) {
+        if (null == key)
+            throw new NullPointerException("The parameter key must be not null.");
+
         TransactionStatus status = transactionManager.getTransaction(
                 new DefaultTransactionDefinition());
-        jdbcTemplate.update(DELETE_QUERY, key);
+        try {
+            jdbcTemplate.update(DELETE_QUERY, key);
+        } catch (Exception e) {
+            transactionManager.rollback(status);
+            throw new RuntimeException(e);
+        }
         transactionManager.commit(status);
     }
 }
