@@ -1,8 +1,11 @@
 package com.github.tachesimazzoca.spring.examples.forum.controllers;
 
+import com.github.tachesimazzoca.spring.examples.forum.config.Config;
+import com.github.tachesimazzoca.spring.examples.forum.models.Storage;
 import com.github.tachesimazzoca.spring.examples.forum.views.AccountsEntryForm;
 import com.github.tachesimazzoca.spring.examples.forum.views.helpers.FormHelper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.MultiValueMap;
@@ -13,16 +16,31 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
+import javax.validation.ValidatorFactory;
+import java.util.Map;
 import java.util.Set;
+import java.util.logging.Logger;
+
+import static com.github.tachesimazzoca.spring.examples.forum.util.ParameterUtils.*;
 
 @Controller
 @RequestMapping(value = "/accounts")
 public class AccountsController {
+    private static final Logger LOGGER = Logger.getLogger(AccountsController.class.getName());
+
     @Autowired
-    private Validator validator;
+    private Config config;
+
+    @Autowired
+    private ValidatorFactory validatorFactory;
+
+    @Autowired
+    @Qualifier("emailStorage")
+    private Storage emailStorage;
 
     @RequestMapping(value = "/errors/{name}", method = RequestMethod.GET)
     @ResponseStatus(HttpStatus.FORBIDDEN)
@@ -38,15 +56,27 @@ public class AccountsController {
     }
 
     @RequestMapping(value = "/entry", method = RequestMethod.POST)
-    public String postEntry(@RequestBody MultiValueMap<String, String> params)
+    public String postEntry(@RequestBody MultiValueMap<String, String> formData)
             throws ValidatorException {
-        AccountsEntryForm form = AccountsEntryForm.bindFrom(params);
+        AccountsEntryForm form = AccountsEntryForm.bindFrom(formData);
+        Validator validator = validatorFactory.getValidator();
         Set<ConstraintViolation<AccountsEntryForm>> errors = validator.validate(form);
         if (!errors.isEmpty()) {
             ModelAndView view = new ModelAndView("accounts/entry");
             view.addObject("form", new FormHelper(form, errors));
             throw new ValidatorException(view);
         }
+
+        Map<String, Object> params = params(
+                "email", form.getEmail(),
+                "password", form.getPassword());
+        String code = emailStorage.create(params);
+        String url = UriComponentsBuilder.fromUriString((String) config.get("url.http"))
+                .path(config.get("url.basedir") + "/accounts/activate")
+                .queryParam("code", code)
+                .build().toUriString();
+        LOGGER.info(url);
+
         return "accounts/verify";
     }
 

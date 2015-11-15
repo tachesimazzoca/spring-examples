@@ -2,18 +2,45 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:jdbc="http://www.springframework.org/schema/jdbc"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
        http://www.springframework.org/schema/beans/spring-beans.xsd
        http://www.springframework.org/schema/context
-       http://www.springframework.org/schema/context/spring-context.xsd">
+       http://www.springframework.org/schema/context/spring-context.xsd
+       http://www.springframework.org/schema/jdbc
+       http://www.springframework.org/schema/jdbc/spring-jdbc.xsd">
 
     <context:property-placeholder location="classpath:/jdbc.properties"/>
 
+    <!-- config -->
+    <bean id="config"
+          class="com.github.tachesimazzoca.spring.examples.forum.config.TypesafeConfig"
+          factory-method="load">
+    </bean>
+
+    <!-- dataSource -->
     <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
         <property name="driverClassName" value="${jdbc.driverClassName}"/>
         <property name="url" value="${jdbc.url}"/>
         <property name="username" value="${jdbc.username}"/>
         <property name="password" value="${jdbc.password}"/>
-        <property name="defaultAutoCommit" value="true"/>
+        <property name="defaultAutoCommit" value="false"/>
+    </bean>
+    <jdbc:initialize-database data-source="dataSource" ignore-failures="DROPS">
+        <jdbc:script location="classpath:/sql/schema.sql"/>
+    </jdbc:initialize-database>
+
+    <!-- storage -->
+    <bean id="emailStorage"
+          class="com.github.tachesimazzoca.spring.examples.forum.models.JdbcTemplateStorage">
+        <constructor-arg ref="dataSource"/>
+        <constructor-arg value="session_storage"/>
+        <constructor-arg value="email-"/>
+    </bean>
+
+    <!-- validator -->
+    <bean id="validatorFactory"
+          class="javax.validation.Validation"
+          factory-method="buildDefaultValidatorFactory">
     </bean>
 </beans>

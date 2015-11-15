@@ -9,10 +9,10 @@
 <meta charset="utf-8">
 <head>
   <title>${title?html}</title>
-  <link href="${config.url.assets}lib/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-  <link href="${config.url.assets}css/bootstrap-override.css" rel="stylesheet">
-  <script src="${config.url.assets}lib/jquery/jquery.min.js"></script>
-  <script src="${config.url.assets}lib/bootstrap/js/bootstrap.min.js"></script>
+  <link href="${config.url.assets}/lib/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="${config.url.assets}/css/bootstrap-override.css" rel="stylesheet">
+  <script src="${config.url.assets}/lib/jquery/jquery.min.js"></script>
+  <script src="${config.url.assets}/lib/bootstrap/js/bootstrap.min.js"></script>
   <script type="text/javascript">
   (function ($) {
     $(function() {
@@ -33,17 +33,17 @@
           <span class="icon-bar"></span>
           <span class="icon-bar"></span>
         </button>
-        <a class="navbar-brand" href="${config.url.base}${config.url.home}">${(config.html.title)?html}</a>
+        <a class="navbar-brand" href="${config.url.home}">${(config.html.title)?html}</a>
       </div>
       <div class="collapse navbar-collapse" id="jsNavbarCollapse-1">
         <ul class="nav navbar-nav">
-          <li><a href="${config.url.base}questions">Questions</a></li>
+          <li><a href="${config.url.basedir}/questions">Questions</a></li>
           <#if account?has_content>
-          <li><a href="${config.url.base}dashboard">Dashboard</a></li>
-          <li><a href="${config.url.base}accounts/signout">Sign Out</a></li>
+          <li><a href="${config.url.basedir}/dashboard">Dashboard</a></li>
+          <li><a href="${config.url.basedir}/accounts/logout">Sign Out</a></li>
           <#else>
-          <li><a href="${config.url.base}accounts/signup">Sign Up</a></li>
-          <li><a href="${config.url.base}accounts/signin">Sign In</a></li>
+          <li><a href="${config.url.basedir}/accounts/entry">Sign Up</a></li>
+          <li><a href="${config.url.basedir}/accounts/login">Sign In</a></li>
           </#if>
         </ul>
       </div>
@@ -70,7 +70,7 @@
     <hr>
     <div class="container-fluid">
       <div class="row-fluid">
-        <p>&copy; Copyright 2014 <a href="http://github.com/tachesimazzoca">tachesimazzoca</a>.</p>
+        <p>&copy; Copyright 2015 <a href="http://github.com/tachesimazzoca">tachesimazzoca</a>.</p>
       </div>
     </div>
   </div>
