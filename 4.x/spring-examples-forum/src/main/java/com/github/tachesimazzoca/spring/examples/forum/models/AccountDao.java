@@ -1,5 +1,9 @@
 package com.github.tachesimazzoca.spring.examples.forum.models;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Component;
+
 import javax.sql.DataSource;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -8,12 +12,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+@Component
 public class AccountDao extends JdbcTemplateDao<Account> {
     public static final String TABLE_NAME = "accounts";
     public static final String[] COLUMNS = {
             "email", "password_salt", "password_hash", "nickname", "status" };
     public static final String GENERATED_KEY_COLUMN = "id";
 
+    @Autowired
     public AccountDao(DataSource dataSource) {
         super(dataSource, TABLE_NAME, COLUMNS, GENERATED_KEY_COLUMN);
     }

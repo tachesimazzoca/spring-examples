@@ -31,11 +31,11 @@
     </jdbc:initialize-database>
 
     <!-- storage -->
-    <bean id="emailStorage"
+    <bean id="verificationStorage"
           class="com.github.tachesimazzoca.spring.examples.forum.models.JdbcTemplateStorage">
         <constructor-arg ref="dataSource"/>
         <constructor-arg value="session_storage"/>
-        <constructor-arg value="email-"/>
+        <constructor-arg value="verification-"/>
     </bean>
 
     <!-- validator -->

@@ -1,6 +1,7 @@
 package com.github.tachesimazzoca.spring.examples.forum.controllers;
 
 import com.github.tachesimazzoca.spring.examples.forum.config.Config;
+import com.github.tachesimazzoca.spring.examples.forum.models.AccountDao;
 import com.github.tachesimazzoca.spring.examples.forum.models.Storage;
 import com.github.tachesimazzoca.spring.examples.forum.views.AccountsEntryForm;
 import com.github.tachesimazzoca.spring.examples.forum.views.helpers.FormHelper;
@@ -39,8 +40,11 @@ public class AccountsController {
     private ValidatorFactory validatorFactory;
 
     @Autowired
-    @Qualifier("emailStorage")
-    private Storage emailStorage;
+    private AccountDao accountDao;
+
+    @Autowired
+    @Qualifier("verificationStorage")
+    private Storage verificationStorage;
 
     @RequestMapping(value = "/errors/{name}", method = RequestMethod.GET)
     @ResponseStatus(HttpStatus.FORBIDDEN)
@@ -58,8 +62,19 @@ public class AccountsController {
     @RequestMapping(value = "/entry", method = RequestMethod.POST)
     public String postEntry(@RequestBody MultiValueMap<String, String> formData)
             throws ValidatorException {
+
         AccountsEntryForm form = AccountsEntryForm.bindFrom(formData);
         Validator validator = validatorFactory.getValidator();
+
+        // Check if the email has been registered
+        if (validator.validateProperty(form, "email").isEmpty()) {
+            if (!form.getEmail().isEmpty()) {
+                if (accountDao.findByEmail(form.getEmail()).isPresent()) {
+                    form.setUniqueEmail(false);
+                }
+            }
+        }
+
         Set<ConstraintViolation<AccountsEntryForm>> errors = validator.validate(form);
         if (!errors.isEmpty()) {
             ModelAndView view = new ModelAndView("accounts/entry");
@@ -67,10 +82,11 @@ public class AccountsController {
             throw new ValidatorException(view);
         }
 
+        // Store the parameters temporally
         Map<String, Object> params = params(
                 "email", form.getEmail(),
                 "password", form.getPassword());
-        String code = emailStorage.create(params);
+        String code = verificationStorage.create(params);
         String url = UriComponentsBuilder.fromUriString((String) config.get("url.http"))
                 .path(config.get("url.basedir") + "/accounts/activate")
                 .queryParam("code", code)
