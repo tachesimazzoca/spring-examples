@@ -130,7 +130,7 @@ public class PropertyEditorTest {
         final String NEWLINE = String.format("%n");
         item.setPropertyValue("options",
                 "meta.description=For sale" + NEWLINE +
-                "meta.note=No responsibility" + NEWLINE);
+                        "meta.note=No responsibility" + NEWLINE);
         assertEquals("For sale", ((Properties) item.getPropertyValue("options")).get("meta.description"));
         assertEquals("No responsibility", ((Properties) item.getPropertyValue("options")).get("meta.note"));
     }
