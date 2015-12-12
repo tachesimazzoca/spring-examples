@@ -134,7 +134,7 @@ public class AccountsController {
         }
     }
 
-    @ExceptionHandler(AccountsController.ValidatorException.class)
+    @ExceptionHandler(ValidatorException.class)
     @ResponseStatus(HttpStatus.FORBIDDEN)
     public ModelAndView handle(ValidatorException e) {
         return e.getView();
