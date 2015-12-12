@@ -2,7 +2,6 @@ package com.github.tachesimazzoca.spring.examples.forum.views;
 
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotEmpty;
-import org.springframework.util.MultiValueMap;
 
 import javax.validation.constraints.AssertTrue;
 import javax.validation.constraints.Pattern;
@@ -63,22 +62,15 @@ public class AccountsEntryForm {
             return password.equals(retypedPassword);
     }
 
+    public static String[] getAllowedFields() {
+        return new String[] {"email", "password", "retypedPassword"};
+    }
+
     public static AccountsEntryForm emptyForm() {
         return new AccountsEntryForm();
     }
 
     public static AccountsEntryForm defaultForm() {
         return new AccountsEntryForm();
-    }
-
-    public static AccountsEntryForm bindFrom(MultiValueMap<String, String> params) {
-        AccountsEntryForm form = emptyForm();
-        if (params.containsKey("email"))
-            form.setEmail(params.getFirst("email"));
-        if (params.containsKey("password"))
-            form.setPassword(params.getFirst("password"));
-        if (params.containsKey("retypedPassword"))
-            form.setRetypedPassword(params.getFirst("retypedPassword"));
-        return form;
     }
 }

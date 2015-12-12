@@ -13,7 +13,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.InitBinder;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -49,6 +52,16 @@ public class AccountsController {
     @Qualifier("verificationStorage")
     private MultiValueMapStorage verificationStorage;
 
+    @InitBinder("accountsEntryForm")
+    public void initBinder(WebDataBinder binder) {
+        binder.setAllowedFields(AccountsEntryForm.getAllowedFields());
+    }
+
+    @ModelAttribute("accountsEntryForm")
+    public AccountsEntryForm accountsEntryForm() {
+        return AccountsEntryForm.defaultForm();
+    }
+
     @RequestMapping(value = "/errors/{name}", method = RequestMethod.GET)
     @ResponseStatus(HttpStatus.FORBIDDEN)
     public String errors(@PathVariable("name") String name) {
@@ -57,15 +70,14 @@ public class AccountsController {
 
     @RequestMapping(value = "/entry", method = RequestMethod.GET)
     public String entry(Model model) {
-        model.addAttribute("form", new FormHelper(AccountsEntryForm.defaultForm()));
+        model.addAttribute("form", new FormHelper(accountsEntryForm()));
         return "accounts/entry";
     }
 
     @RequestMapping(value = "/entry", method = RequestMethod.POST)
-    public String postEntry(@RequestBody MultiValueMap<String, String> formData)
+    public String postEntry(@ModelAttribute("accountsEntryForm") AccountsEntryForm form)
             throws ValidatorException {
 
-        AccountsEntryForm form = AccountsEntryForm.bindFrom(formData);
         Validator validator = validatorFactory.getValidator();
 
         // Check if the email has been registered
