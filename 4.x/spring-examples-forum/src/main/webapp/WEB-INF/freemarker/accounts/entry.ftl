@@ -1,27 +1,19 @@
 <#import "/_layouts/default.ftl" as layout>
+<#import "/_macros/helpers.ftl" as helpers>
 <@layout.defaultLayout "Account Registration">
-<#if form.hasErrors()>
-<div class="alert alert-danger">
-<ul>
-<#list form.errors as err>
-  <li>${(err.message)?html}</li>
-</#list>
-</ul>
-</div>
-</#if>
 <form action="entry" method="POST">
 <div style="width: 400px;">
   <div class="form-group">
     <label>E-mail</label>
-    ${form.toHTMLInput("text", "email", "class=\"form-control\"")}
+    <@helpers.formInput "accountsEntryForm.email" "class=\"form-control\""/>
   </div>
   <div class="form-group">
     <label>Password</label>
-    ${form.toHTMLInput("password", "password", "class=\"form-control\"")}
+    <@helpers.formInput "accountsEntryForm.password" "class=\"form-control\"" "password"/>
   </div>
   <div class="form-group">
     <label>Re-type Password</label>
-    ${form.toHTMLInput("password", "retypedPassword", "class=\"form-control\"")}
+    <@helpers.formInput "accountsEntryForm.retypedPassword" "class=\"form-control\"" "password"/>
   </div>
 </div>
 <div>

@@ -3,9 +3,9 @@ package com.github.tachesimazzoca.spring.examples.forum.controllers;
 import com.github.tachesimazzoca.spring.examples.forum.config.Config;
 import com.github.tachesimazzoca.spring.examples.forum.models.Account;
 import com.github.tachesimazzoca.spring.examples.forum.models.AccountDao;
+import com.github.tachesimazzoca.spring.examples.forum.models.AccountsEntryForm;
+import com.github.tachesimazzoca.spring.examples.forum.models.AccountsEntryFormValidator;
 import com.github.tachesimazzoca.spring.examples.forum.storage.MultiValueMapStorage;
-import com.github.tachesimazzoca.spring.examples.forum.views.AccountsEntryForm;
-import com.github.tachesimazzoca.spring.examples.forum.views.helpers.FormHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
@@ -13,25 +13,20 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.WebDataBinder;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import javax.validation.ConstraintViolation;
-import javax.validation.Validator;
-import javax.validation.ValidatorFactory;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.logging.Logger;
 
 @Controller
@@ -43,10 +38,10 @@ public class AccountsController {
     private Config config;
 
     @Autowired
-    private ValidatorFactory validatorFactory;
+    private AccountDao accountDao;
 
     @Autowired
-    private AccountDao accountDao;
+    private AccountsEntryFormValidator accountsEntryFormValidator;
 
     @Autowired
     @Qualifier("verificationStorage")
@@ -55,11 +50,7 @@ public class AccountsController {
     @InitBinder("accountsEntryForm")
     public void initBinder(WebDataBinder binder) {
         binder.setAllowedFields(AccountsEntryForm.getAllowedFields());
-    }
-
-    @ModelAttribute("accountsEntryForm")
-    public AccountsEntryForm accountsEntryForm() {
-        return AccountsEntryForm.defaultForm();
+        binder.setValidator(accountsEntryFormValidator);
     }
 
     @RequestMapping(value = "/errors/{name}", method = RequestMethod.GET)
@@ -69,31 +60,16 @@ public class AccountsController {
     }
 
     @RequestMapping(value = "/entry", method = RequestMethod.GET)
-    public String entry(Model model) {
-        model.addAttribute("form", new FormHelper(accountsEntryForm()));
+    public String entry(@ModelAttribute("accountsEntryForm") AccountsEntryForm form) {
         return "accounts/entry";
     }
 
     @RequestMapping(value = "/entry", method = RequestMethod.POST)
-    public String postEntry(@ModelAttribute("accountsEntryForm") AccountsEntryForm form)
-            throws ValidatorException {
+    public String postEntry(@Validated @ModelAttribute("accountsEntryForm") AccountsEntryForm form,
+                            BindingResult errors) {
 
-        Validator validator = validatorFactory.getValidator();
-
-        // Check if the email has been registered
-        if (validator.validateProperty(form, "email").isEmpty()) {
-            if (!form.getEmail().isEmpty()) {
-                if (accountDao.findByEmail(form.getEmail()).isPresent()) {
-                    form.setUniqueEmail(false);
-                }
-            }
-        }
-
-        Set<ConstraintViolation<AccountsEntryForm>> errors = validator.validate(form);
-        if (!errors.isEmpty()) {
-            ModelAndView view = new ModelAndView("accounts/entry");
-            view.addObject("form", new FormHelper(form, errors));
-            throw new ValidatorException(view);
+        if (errors.hasErrors()) {
+            return "accounts/entry";
         }
 
         // Store the parameters temporarily
@@ -132,23 +108,5 @@ public class AccountsController {
         model.addAttribute("account", savedAccount);
 
         return "accounts/activate";
-    }
-
-    public class ValidatorException extends Exception {
-        private final ModelAndView view;
-
-        public ValidatorException(ModelAndView view) {
-            this.view = view;
-        }
-
-        public ModelAndView getView() {
-            return view;
-        }
-    }
-
-    @ExceptionHandler(ValidatorException.class)
-    @ResponseStatus(HttpStatus.FORBIDDEN)
-    public ModelAndView handle(ValidatorException e) {
-        return e.getView();
     }
 }

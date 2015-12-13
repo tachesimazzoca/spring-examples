@@ -42,9 +42,13 @@
         <constructor-arg value="verification-"/>
     </bean>
 
-    <!-- validator -->
-    <bean id="validatorFactory"
-          class="javax.validation.Validation"
-          factory-method="buildDefaultValidatorFactory">
+    <!-- messageSource -->
+    <bean id="messageSource"
+          class="org.springframework.context.support.ResourceBundleMessageSource">
+        <property name="basenames">
+            <list>
+                <value>i18n/messages</value>
+            </list>
+        </property>
     </bean>
 </beans>
