@@ -67,7 +67,6 @@ public class AccountsController {
     @RequestMapping(value = "/entry", method = RequestMethod.POST)
     public String postEntry(@Validated @ModelAttribute("accountsEntryForm") AccountsEntryForm form,
                             BindingResult errors) {
-
         if (errors.hasErrors()) {
             return "accounts/entry";
         }

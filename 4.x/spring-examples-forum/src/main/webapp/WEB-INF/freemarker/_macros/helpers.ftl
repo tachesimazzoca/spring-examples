@@ -12,12 +12,10 @@
 
 <#macro bind path>
     <#if htmlEscape?exists>
-        <#assign status = springMacroRequestContext.getBindStatus(path, htmlEscape)>
+        <#assign status=springMacroRequestContext.getBindStatus(path, htmlEscape)>
     <#else>
-        <#assign status = springMacroRequestContext.getBindStatus(path)>
+        <#assign status=springMacroRequestContext.getBindStatus(path)>
     </#if>
-    <#-- assign a temporary value, forcing a string representation for any
-    kind of variable. This temp value is only used in this macro lib -->
     <#if status.value?exists && status.value?is_boolean>
         <#assign stringStatusValue=status.value?string>
     <#else>
@@ -26,9 +24,7 @@
 </#macro>
 
 <#macro bindEscaped path, htmlEscape>
-    <#assign status = springMacroRequestContext.getBindStatus(path, htmlEscape)>
-    <#-- assign a temporary value, forcing a string representation for any
-    kind of variable. This temp value is only used in this macro lib -->
+    <#assign status=springMacroRequestContext.getBindStatus(path, htmlEscape)>
     <#if status.value?exists && status.value?is_boolean>
         <#assign stringStatusValue=status.value?string>
     <#else>
@@ -36,9 +32,14 @@
     </#if>
 </#macro>
 
-<#macro formInput path attributes="" fieldType="text" fillIn=true>
+<#macro formInput path fieldType="text" attributes="class=\"form-control\"">
     <@bind path/>
-    <input type="${fieldType}" name="${status.expression}" value="<#if fillIn>${stringStatusValue}</#if>" ${attributes}<@closeTag/>
+    <input type="${fieldType}" name="${status.expression}" value="${stringStatusValue}" ${attributes}<@closeTag/>
+</#macro>
+
+<#macro formPasswordInput path attributes="class=\"form-control\"">
+    <@bind path/>
+    <input type="password" name="${status.expression}" ${attributes}<@closeTag/>
 </#macro>
 
 <#macro formTextarea path attributes="">
@@ -96,16 +97,17 @@
 	<input type="checkbox" name="${status.expression}"<#if isSelected> checked="checked"</#if> ${attributes}/>
 </#macro>
 
-<#macro showErrors separator classOrStyle="">
-    <#list status.errorMessages as error>
-    <#if classOrStyle == "">
-        <b>${error}</b>
-    <#else>
-        <#if classOrStyle?index_of(":") == -1><#assign attr="class"><#else><#assign attr="style"></#if>
-        <span ${attr}="${classOrStyle}">${error}</span>
+<#macro showAllErrors path attributes="class=\"alert alert-danger\"">
+    <@bind path />
+    <#if status.errors.hasErrors()>
+    <div ${attributes}>
+        <ul>
+        <#list status.errors.allErrors as error>
+            <li><@message error.code /></li>
+        </#list>
+        </ul>
+    </div>
     </#if>
-    <#if error_has_next>${separator}</#if>
-    </#list>
 </#macro>
 
 <#macro checkSelected value>
