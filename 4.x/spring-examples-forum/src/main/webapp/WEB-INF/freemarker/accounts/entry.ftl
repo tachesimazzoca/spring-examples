@@ -1,5 +1,6 @@
 <#import "/_layouts/default.ftl" as layout>
 <#import "/_macros/helpers.ftl" as helpers>
+<#assign htmlEscape=true in helpers>
 <@layout.defaultLayout "Account Registration">
 
 <@helpers.showAllErrors "accountsEntryForm"/>
@@ -15,7 +16,7 @@
     <@helpers.formInput "accountsEntryForm.password" "password"/>
   </div>
   <div class="form-group">
-    <label>Re-type Password</label>
+    <label>Re-typed Password</label>
     <@helpers.formInput "accountsEntryForm.retypedPassword" "password"/>
   </div>
 </div>
