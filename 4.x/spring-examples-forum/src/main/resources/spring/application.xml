@@ -30,6 +30,11 @@
         <jdbc:script location="classpath:/sql/schema.sql"/>
     </jdbc:initialize-database>
 
+    <!-- timer -->
+    <bean id="timer"
+          class="com.github.tachesimazzoca.spring.examples.forum.util.SystemTimer">
+    </bean>
+
     <!-- storage -->
     <bean id="storageEngine"
           class="com.github.tachesimazzoca.spring.examples.forum.storage.JdbcTemplateStorageEngine">

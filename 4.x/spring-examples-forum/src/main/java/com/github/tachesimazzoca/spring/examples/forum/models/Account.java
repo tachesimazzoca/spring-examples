@@ -27,7 +27,7 @@ public class Account {
         setPasswordHash(hashPassword(password, getPasswordSalt()));
     }
 
-    public boolean isEqualPassword(String password) {
+    public boolean isValidPassword(String password) {
         return hashPassword(password, getPasswordSalt()).equals(getPasswordHash());
     }
 

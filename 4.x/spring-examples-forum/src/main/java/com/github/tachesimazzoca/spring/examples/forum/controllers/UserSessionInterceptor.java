@@ -1,6 +1,8 @@
 package com.github.tachesimazzoca.spring.examples.forum.controllers;
 
 import com.github.tachesimazzoca.spring.examples.forum.sessions.UserSession;
+import com.github.tachesimazzoca.spring.examples.forum.util.Timer;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 import javax.servlet.http.HttpServletRequest;
@@ -12,6 +14,9 @@ public class UserSessionInterceptor extends HandlerInterceptorAdapter {
     private static final String[] EXCLUDE_MAPPING = {
             "^(/)?$", "^pages(/.*)?$", "^accounts(/.*)?$"};
 
+    @Autowired
+    private Timer timer;
+
     @Override
     public boolean preHandle(HttpServletRequest request,
                              HttpServletResponse response,
@@ -19,7 +24,7 @@ public class UserSessionInterceptor extends HandlerInterceptorAdapter {
 
         HttpSession session = request.getSession();
         UserSession userSession = (UserSession) session.getAttribute(UserSession.KEY);
-        Long time = System.currentTimeMillis();
+        Long time = timer.currentTimeMillis();
         if (null != userSession) {
             if (time - userSession.getLastAccessedTime() > SESSION_LIFETIME) {
                 userSession = null;
