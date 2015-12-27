@@ -8,18 +8,19 @@ import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 
 @Component
-public class AccountsEntryFormValidator implements Validator {
+public class ProfileEditFormValidator implements Validator {
+
     private final EmailValidator emailRule = EmailValidator.getInstance(false);
     private final RegexValidator passwordRule = new RegexValidator("^.{8,}$", false);
 
     @Override
     public boolean supports(Class<?> aClass) {
-        return AccountsEntryForm.class.isAssignableFrom(aClass);
+        return ProfileEditForm.class.isAssignableFrom(aClass);
     }
 
     @Override
     public void validate(Object o, Errors errors) {
-        AccountsEntryForm form = (AccountsEntryForm) o;
+        ProfileEditForm form = (ProfileEditForm) o;
 
         // email
         ValidationUtils.rejectIfEmptyOrWhitespace(
@@ -31,15 +32,15 @@ public class AccountsEntryFormValidator implements Validator {
         }
 
         // password
-        ValidationUtils.rejectIfEmptyOrWhitespace(
-                errors, "password", "notEmpty.password");
-        if (!errors.hasFieldErrors("password")) {
-            if (!passwordRule.isValid(form.getPassword())) {
-                errors.rejectValue("password", "pattern.password");
+        if (!form.getPassword().isEmpty()) {
+            if (!errors.hasFieldErrors("password")) {
+                if (!passwordRule.isValid(form.getPassword())) {
+                    errors.rejectValue("password", "pattern.password");
+                }
             }
-        }
-        if (!form.isValidRetypedPassword()) {
-            errors.rejectValue("retypedPassword", "equalTo.retypedPassword");
+            if (!form.isValidRetypedPassword()) {
+                errors.rejectValue("retypedPassword", "equalTo.retypedPassword");
+            }
         }
     }
 }

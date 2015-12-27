@@ -38,7 +38,7 @@
       <div class="collapse navbar-collapse" id="jsNavbarCollapse-1">
         <ul class="nav navbar-nav">
           <li><a href="${config.url.basedir}/questions">Questions</a></li>
-          <#if account?has_content>
+          <#if user.account?has_content>
           <li><a href="${config.url.basedir}/dashboard">Dashboard</a></li>
           <li><a href="${config.url.basedir}/accounts/logout">Sign Out</a></li>
           <#else>

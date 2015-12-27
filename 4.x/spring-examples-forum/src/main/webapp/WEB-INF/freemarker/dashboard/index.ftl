@@ -1,6 +1,7 @@
 <#import "/_layouts/default.ftl" as layout>
 <#import "/_macros/helpers.ftl" as helpers>
 <#assign htmlEscape=true in helpers>
+<#assign account=user.account>
 
 <@layout.defaultLayout "Dashboard">
 
@@ -11,9 +12,9 @@
   <div class="panel-body">
     <dl class="dl-horizontal">
       <dt>Email</dt>
-      <dd></dd>
+      <dd>${(account.email)?html}</dd>
       <dt>Nickname</dt>
-      <dd></dd>
+      <dd>${(account.nickname)?html}</dd>
     </dl>
     <div class="text-right">
       <a href="${config.url.basedir}/profile/edit" class="btn btn-default">Edit</a>

@@ -10,9 +10,9 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 public class UserSessionInterceptor extends HandlerInterceptorAdapter {
-    private static final Long SESSION_LIFETIME = 30L * 1000;
-    private static final String[] EXCLUDE_MAPPING = {
-            "^(/)?$", "^pages(/.*)?$", "^accounts(/.*)?$"};
+    private static final Long SESSION_LIFETIME = 3600L * 1000;
+    private static final String[] SECURE_MAPPING = {
+            "^dashboard(/.*)?$", "^profile(/.*)?$"};
 
     @Autowired
     private Timer timer;
@@ -54,10 +54,10 @@ public class UserSessionInterceptor extends HandlerInterceptorAdapter {
             relativePath = request.getRequestURI().substring(request.getContextPath().length() + 1);
         }
 
-        for (String pattern : EXCLUDE_MAPPING) {
+        for (String pattern : SECURE_MAPPING) {
             if (relativePath.matches(pattern))
-                return false;
+                return true;
         }
-        return true;
+        return false;
     }
 }

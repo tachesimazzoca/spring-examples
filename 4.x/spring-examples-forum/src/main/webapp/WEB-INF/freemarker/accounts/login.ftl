@@ -6,14 +6,6 @@
 
 <@helpers.showAllErrors "accountsLoginForm"/>
 
-<#if accountsLoginForm.denied>
-<div class="alert alert-danger">
-  <ul>
-    <li><@helpers.message "authorized"/></li>
-  </ul>
-</div>
-</#if>
-
 <div class="center-block" style="width: 400px">
 <form action="login" method="POST">
 <div class="well">

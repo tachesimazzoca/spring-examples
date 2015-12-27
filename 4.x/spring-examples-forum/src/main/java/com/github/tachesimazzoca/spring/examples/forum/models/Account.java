@@ -14,6 +14,10 @@ public class Account {
     private String nickname;
     private Status status;
 
+    public boolean isActive() {
+        return status.equals(Status.ACTIVE);
+    }
+
     public void refreshPassword(String password) {
         setPasswordSalt(RandomStringUtils.randomAlphanumeric(PASSWORD_SALT_LENGTH));
         setPasswordHash(hashPassword(password, getPasswordSalt()));
