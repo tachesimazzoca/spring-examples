@@ -5,7 +5,6 @@
 <@layout.defaultLayout "Editing Profile">
 <@helpers.showAllErrors "profileEditForm"/>
 <form action="edit" method="POST">
-<@helpers.formInput "profileEditForm.id" "hidden"/>
 <div style="max-width: 400px;">
   <div class="form-group">
     <label>E-mail</label>

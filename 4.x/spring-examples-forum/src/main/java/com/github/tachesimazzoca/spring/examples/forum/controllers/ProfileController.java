@@ -43,44 +43,30 @@ public class ProfileController extends AbstractUserController {
         binder.setValidator(profileEditFormValidator);
     }
 
-    @RequestMapping(value = "/edit", method = RequestMethod.GET)
-    public String edit(@ModelAttribute("user") User user,
-                       @ModelAttribute("profileEditForm") ProfileEditForm form) {
+    @ModelAttribute
+    public ProfileEditForm profileEditForm(@ModelAttribute User user) {
         Account account = user.getAccount();
-        form.setId(String.valueOf(account.getId()));
+        ProfileEditForm form = new ProfileEditForm();
         form.setEmail(account.getEmail());
         form.setNickname(account.getNickname());
+        form.setCurrentAccount(account);
+        return form;
+    }
+
+    @RequestMapping(value = "/edit", method = RequestMethod.GET)
+    public String edit() {
         return "profile/edit";
     }
 
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
-    public String postEdit(@ModelAttribute("user") User user,
-                           @Validated @ModelAttribute("profileEditForm") ProfileEditForm form,
+    public String postEdit(@ModelAttribute User user,
+                           @Validated @ModelAttribute ProfileEditForm form,
                            BindingResult errors) {
-        Account account = user.getAccount();
-        if (!account.getId().equals(Long.parseLong(form.getId()))) {
-            // The current user isn't the owner of this account.
-            return "redirect:/dashboard";
-        }
-
-        if (!errors.hasFieldErrors("email")) {
-            if (!form.getEmail().equals(account.getEmail())) {
-                if (accountDao.findByEmail(form.getEmail()).isPresent()) {
-                    errors.rejectValue("email", "unique.email");
-                }
-            }
-        }
-
-        if (!form.getPassword().isEmpty()) {
-            if (!account.isValidPassword(form.getCurrentPassword())) {
-                errors.rejectValue("currentPassword", "equalTo.currentPassword");
-            }
-        }
-
         if (errors.hasErrors()) {
             return "profile/edit";
         }
 
+        Account account = user.getAccount();
         account.setNickname(form.getNickname());
         if (!form.getPassword().isEmpty()) {
             account.refreshPassword(form.getPassword());

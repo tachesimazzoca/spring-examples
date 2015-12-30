@@ -19,17 +19,23 @@ public class AccountsLoginFormValidator implements Validator {
     public void validate(Object o, Errors errors) {
         AccountsLoginForm form = (AccountsLoginForm) o;
 
-        // email
-        ValidationUtils.rejectIfEmptyOrWhitespace(
-                errors, "email", "notEmpty.email");
-        if (!errors.hasFieldErrors("email")) {
-            if (!emailRule.isValid(form.getEmail())) {
-                errors.rejectValue("email", "pattern.email");
-            }
-        }
+        checkEmail(form, errors);
+        checkPassword(form, errors);
+    }
 
-        // password
+    private void checkEmail(AccountsLoginForm form, Errors errors) {
         ValidationUtils.rejectIfEmptyOrWhitespace(
-                errors, "password", "notEmpty.password");
+                errors, "email", "NotEmpty.email");
+        if (errors.hasFieldErrors("email"))
+            return;
+
+        if (!emailRule.isValid(form.getEmail())) {
+            errors.rejectValue("email", "Pattern.email");
+        }
+    }
+
+    private void checkPassword(AccountsLoginForm form, Errors errors) {
+        ValidationUtils.rejectIfEmptyOrWhitespace(
+                errors, "password", "NotEmpty.password");
     }
 }

@@ -1,7 +1,6 @@
 package com.github.tachesimazzoca.spring.examples.forum.models;
 
 import lombok.Data;
-import org.apache.commons.lang.StringUtils;
 
 @Data
 public class AccountsLoginForm {

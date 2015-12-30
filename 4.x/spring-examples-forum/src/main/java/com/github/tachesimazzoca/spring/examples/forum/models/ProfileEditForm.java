@@ -4,7 +4,6 @@ import lombok.Data;
 
 @Data
 public class ProfileEditForm {
-    private String id = "";
     private String email = "";
     private String currentPassword = "";
     private String password = "";
@@ -21,7 +20,7 @@ public class ProfileEditForm {
     }
 
     public static String[] getAllowedFields() {
-        return new String[]{"id", "email", "currentPassword",
+        return new String[]{"email", "currentPassword",
                 "password", "retypedPassword", "nickname"};
     }
 }

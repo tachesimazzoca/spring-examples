@@ -110,6 +110,31 @@
     </#if>
 </#macro>
 
+<#macro showGlobalErrors path attributes="class=\"alert alert-danger\"">
+    <@bind path />
+    <#if status.errors.hasGlobalErrors()>
+    <div ${attributes}>
+        <ul>
+        <#list status.errors.globalErrors as error>
+            <li><@message error.code /></li>
+        </#list>
+        </ul>
+    </div>
+    </#if>
+</#macro>
+
+<#macro showFieldErrors attributes="class=\"alert alert-danger\"">
+    <#if (status.errorMessages?size > 0)>
+    <div ${attributes}>
+        <ul>
+        <#list status.errorMessages as msg>
+            <li>${msg}</li>
+        </#list>
+        </ul>
+    </div>
+    </#if>
+</#macro>
+
 <#macro checkSelected value>
     <#if stringStatusValue?is_number && stringStatusValue == value?number>selected="selected"</#if>
     <#if stringStatusValue?is_string && stringStatusValue == value>selected="selected"</#if>
