@@ -33,23 +33,23 @@
 </#macro>
 
 <#macro formInput path fieldType="text" attributes="class=\"form-control\"">
-    <@bind path/>
-    <input type="${fieldType}" name="${status.expression}" value="${stringStatusValue}" ${attributes}<@closeTag/>
+    <@bindEscaped path false/>
+    <input type="${fieldType}" name="${status.expression?html}" value="${stringStatusValue?html}" ${attributes}<@closeTag/>
 </#macro>
 
 <#macro formPasswordInput path attributes="class=\"form-control\"">
-    <@bind path/>
-    <input type="password" name="${status.expression}" ${attributes}<@closeTag/>
+    <@bindEscaped path false/>
+    <input type="password" name="${status.expression?html}" ${attributes}<@closeTag/>
 </#macro>
 
 <#macro formTextarea path attributes="">
-    <@bind path/>
-    <textarea name="${status.expression}" ${attributes}>${stringStatusValue}</textarea>
+    <@bindEscaped path false/>
+    <textarea name="${status.expression?html}" ${attributes}>${stringStatusValue?html}</textarea>
 </#macro>
 
 <#macro formSingleSelect path options attributes="">
-    <@bind path/>
-    <select name="${status.expression}" ${attributes}>
+    <@bindEscaped path false/>
+    <select name="${status.expression?html}" ${attributes}>
         <#if options?is_hash>
             <#list options?keys as value>
             <option value="${value?html}"<@checkSelected value/>>${options[value]?html}</option>
@@ -63,8 +63,8 @@
 </#macro>
 
 <#macro formMultiSelect path options attributes="">
-    <@bind path/>
-    <select multiple="multiple" name="${status.expression}" ${attributes}>
+    <@bindEscaped path false/>
+    <select multiple="multiple" name="${status.expression?html}" ${attributes}>
         <#list options?keys as value>
         <#assign isSelected = contains(status.actualValue?default([""]), value)>
         <option value="${value?html}"<#if isSelected> selected="selected"</#if>>${options[value]?html}</option>
@@ -73,37 +73,38 @@
 </#macro>
 
 <#macro formRadioButtons path options separator attributes="">
-    <@bind path/>
+    <@bindEscaped path false/>
     <#list options?keys as value>
-    <input type="radio" id="${id}" name="${status.expression}" value="${value?html}"<#if stringStatusValue == value> checked="checked"</#if> ${attributes}<@closeTag/>
+    <input type="radio" id="${id}" name="${status.expression?html}" value="${value?html}"<#if stringStatusValue == value> checked="checked"</#if> ${attributes}<@closeTag/>
     <label>${options[value]?html}</label>${separator}
     </#list>
 </#macro>
 
 <#macro formCheckboxes path options separator attributes="">
-    <@bind path/>
+    <@bindEscaped path false/>
     <#list options?keys as value>
     <#assign isSelected = contains(status.actualValue?default([""]), value)>
-    <input type="checkbox" id="${id}" name="${status.expression}" value="${value?html}"<#if isSelected> checked="checked"</#if> ${attributes}<@closeTag/>
+    <input type="checkbox" id="${id}" name="${status.expression?html}" value="${value?html}"<#if isSelected> checked="checked"</#if> ${attributes}<@closeTag/>
     <label>${options[value]?html}</label>${separator}
     </#list>
-    <input type="hidden" name="_${status.expression}" value="on"/>
+    <input type="hidden" name="_${status.expression?html}" value="on"/>
 </#macro>
 
 <#macro formCheckbox path attributes="">
-	<@bind path />
+    <@bindEscaped path false/>
     <#assign isSelected = status.value?? && status.value?string=="true">
-	<input type="hidden" name="_${status.expression}" value="on"/>
-	<input type="checkbox" name="${status.expression}"<#if isSelected> checked="checked"</#if> ${attributes}/>
+	<input type="hidden" name="_${status.expression?html}" value="on"/>
+	<input type="checkbox" name="${status.expression?html}"<#if isSelected> checked="checked"</#if> ${attributes}/>
 </#macro>
 
 <#macro showAllErrors path attributes="class=\"alert alert-danger\"">
-    <@bind path />
+    <@bindEscaped path false />
     <#if status.errors.hasErrors()>
     <div ${attributes}>
         <ul>
         <#list status.errors.allErrors as error>
-            <li><@message error.code /></li>
+            <#assign msg><@message error.code /></#assign>
+            <li>${msg?html}</li>
         </#list>
         </ul>
     </div>
@@ -111,12 +112,13 @@
 </#macro>
 
 <#macro showGlobalErrors path attributes="class=\"alert alert-danger\"">
-    <@bind path />
+    <@bindEscaped path false />
     <#if status.errors.hasGlobalErrors()>
     <div ${attributes}>
         <ul>
         <#list status.errors.globalErrors as error>
-            <li><@message error.code /></li>
+            <#assign msg><@message error.code /></#assign>
+            <li>${msg?html}</li>
         </#list>
         </ul>
     </div>
@@ -128,7 +130,7 @@
     <div ${attributes}>
         <ul>
         <#list status.errorMessages as msg>
-            <li>${msg}</li>
+            <li>${msg?html}</li>
         </#list>
         </ul>
     </div>

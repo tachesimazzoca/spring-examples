@@ -1,11 +1,7 @@
 <#import "/_layouts/default.ftl" as layout>
 <#import "/_macros/helpers.ftl" as helpers>
-<#assign htmlEscape=true in helpers>
-
 <@layout.defaultLayout "Sign In">
-
 <@helpers.showAllErrors "accountsLoginForm"/>
-
 <div class="center-block" style="width: 400px">
 <form action="login" method="POST">
 <div class="well">

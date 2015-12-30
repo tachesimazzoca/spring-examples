@@ -1,7 +1,5 @@
 <#import "/_layouts/default.ftl" as layout>
 <#import "/_macros/helpers.ftl" as helpers>
-<#assign htmlEscape=true in helpers>
-
 <@layout.defaultLayout "Editing Profile">
 <@helpers.showAllErrors "profileEditForm"/>
 <form action="edit" method="POST">
