@@ -1,17 +1,21 @@
 package com.github.tachesimazzoca.spring.examples.forum.models;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
+import org.springframework.stereotype.Component;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
 
 import javax.sql.DataSource;
 
+@Component
 public class AccountQuestionDao {
     private final PlatformTransactionManager transactionManager;
     private final JdbcTemplate jdbcTemplate;
 
+    @Autowired
     public AccountQuestionDao(DataSource dataSource) {
         transactionManager = new DataSourceTransactionManager(dataSource);
         jdbcTemplate = new JdbcTemplate(dataSource);

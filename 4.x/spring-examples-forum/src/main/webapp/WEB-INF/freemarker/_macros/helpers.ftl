@@ -42,34 +42,27 @@
     <input type="password" name="${status.expression?html}" ${attributes}<@closeTag/>
 </#macro>
 
-<#macro formTextarea path attributes="">
+<#macro formHiddenInput path>
+    <@bindEscaped path false/>
+    <input type="hidden" name="${status.expression?html}"<@closeTag/>
+</#macro>
+
+<#macro formTextarea path attributes="class=\"form-control\"">
     <@bindEscaped path false/>
     <textarea name="${status.expression?html}" ${attributes}>${stringStatusValue?html}</textarea>
 </#macro>
 
-<#macro formSingleSelect path options attributes="">
+<#macro formOptions path options attributes="">
     <@bindEscaped path false/>
-    <select name="${status.expression?html}" ${attributes}>
-        <#if options?is_hash>
-            <#list options?keys as value>
-            <option value="${value?html}"<@checkSelected value/>>${options[value]?html}</option>
-            </#list>
-        <#else>
-            <#list options as value>
-            <option value="${value?html}"<@checkSelected value/>>${value?html}</option>
-            </#list>
-        </#if>
-    </select>
-</#macro>
-
-<#macro formMultiSelect path options attributes="">
-    <@bindEscaped path false/>
-    <select multiple="multiple" name="${status.expression?html}" ${attributes}>
+    <#if options?is_hash>
         <#list options?keys as value>
-        <#assign isSelected = contains(status.actualValue?default([""]), value)>
-        <option value="${value?html}"<#if isSelected> selected="selected"</#if>>${options[value]?html}</option>
+        <option value="${value?html}"<@checkSelected value/>>${options[value]?html}</option>
         </#list>
-    </select>
+    <#else>
+        <#list options as value>
+        <option value="${value?html}"<@checkSelected value/>>${value?html}</option>
+        </#list>
+    </#if>
 </#macro>
 
 <#macro formRadioButtons path options separator attributes="">

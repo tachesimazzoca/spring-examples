@@ -1,12 +1,15 @@
 package com.github.tachesimazzoca.spring.examples.forum.models;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+@Component
 public class QuestionResultDao {
     private static final QuestionResultRowMapper ROW_MAPPER = new QuestionResultRowMapper();
 
@@ -40,6 +43,7 @@ public class QuestionResultDao {
 
     private JdbcTemplate jdbcTemplate;
 
+    @Autowired
     public QuestionResultDao(DataSource dataSource) {
         jdbcTemplate = new JdbcTemplate(dataSource);
     }

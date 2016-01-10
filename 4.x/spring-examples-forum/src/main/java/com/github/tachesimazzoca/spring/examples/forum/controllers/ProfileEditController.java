@@ -24,8 +24,8 @@ import java.util.logging.Logger;
 
 @Controller
 @RequestMapping(value = "/profile")
-public class ProfileController extends AbstractUserController {
-    private static final Logger LOGGER = Logger.getLogger(ProfileController.class.getName());
+public class ProfileEditController extends AbstractUserController {
+    private static final Logger LOGGER = Logger.getLogger(ProfileEditController.class.getName());
 
     @Autowired
     private Config config;
