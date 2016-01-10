@@ -37,7 +37,7 @@ public class AccountsLoginController extends AbstractUserController {
     private MultiValueMapStorage verificationStorage;
 
     @InitBinder("accountsLoginForm")
-    public void initAccountsEntryFormBinder(WebDataBinder binder) {
+    public void initAccountsLoginFormBinder(WebDataBinder binder) {
         binder.setAllowedFields(AccountsLoginForm.getAllowedFields());
         binder.setValidator(accountsLoginFormValidator);
     }

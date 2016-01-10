@@ -34,7 +34,7 @@ public class QuestionsEditController extends AbstractUserController {
     private Timer timer;
 
     @InitBinder("questionsEditForm")
-    public void initBinder(WebDataBinder binder) {
+    public void initQuestionsEditFormBinder(WebDataBinder binder) {
         binder.setAllowedFields(QuestionsEditForm.getAllowedFields());
         binder.setValidator(questionsEditFormValidator);
     }
