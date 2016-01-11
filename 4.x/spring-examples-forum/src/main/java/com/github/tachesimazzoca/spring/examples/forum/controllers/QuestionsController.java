@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.Map;
 
@@ -25,6 +26,8 @@ import static com.github.tachesimazzoca.spring.examples.forum.util.ParameterUtil
 @Controller
 @RequestMapping(value = "/questions")
 public class QuestionsController extends AbstractUserController {
+    private static final int QUESTION_RESULT_LIMIT = 10;
+
     @Autowired
     private QuestionResultDao questionResultDao;
 
@@ -43,10 +46,21 @@ public class QuestionsController extends AbstractUserController {
             QuestionResult.OrderBy.SUM_POINTS_DESC.getName(), "Vote");
 
     @RequestMapping(method = RequestMethod.GET)
-    public String index(Model model) {
+    public String index(
+            @RequestParam(name = "offset", defaultValue = "0") int offset,
+            @RequestParam(name = "sort", required = false) String sort,
+            Model model) {
+
+        QuestionResult.OrderBy orderBy;
+        if (null != sort && sortMap.containsKey(sort)) {
+            orderBy = QuestionResult.OrderBy.fromName(sort);
+        } else {
+            orderBy = QuestionResult.OrderBy.defaultValue();
+        }
+        sort = orderBy.getName();
+
         Pagination<QuestionResult> questions = questionResultDao.selectPublicQuestions(
-                0, 10, QuestionResult.OrderBy.defaultValue());
-        String sort = QuestionResult.OrderBy.defaultValue().getName();
+                offset, QUESTION_RESULT_LIMIT, orderBy);
         model.addAttribute("questions", questions);
         model.addAttribute("sort", sort);
         model.addAttribute("sortMap", sortMap);
@@ -55,7 +69,8 @@ public class QuestionsController extends AbstractUserController {
 
     @RequestMapping(value = "{id}", method = RequestMethod.GET)
     public String detail(@ModelAttribute User user,
-                         @PathVariable("id") Long id, Model model) {
+                         @PathVariable("id") Long id,
+                         Model model) {
         // question
         Question question = questionDao.find(id).orElse(null);
         if (null == question) {

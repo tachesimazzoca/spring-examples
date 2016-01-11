@@ -47,6 +47,6 @@
 </#list>
 </tbody>
 </table>
-<@p.defaultPagination questions "${config.url.basedir}questions?sort=${sort?url}"></@p.defaultPagination>
+<@p.defaultPagination questions "${config.url.basedir}/questions?sort=${sort?url}"></@p.defaultPagination>
 </#if>
 </@layout.defaultLayout>

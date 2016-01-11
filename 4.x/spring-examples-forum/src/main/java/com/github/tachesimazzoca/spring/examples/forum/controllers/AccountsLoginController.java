@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpSession;
 
@@ -44,8 +45,14 @@ public class AccountsLoginController extends AbstractUserController {
 
     @RequestMapping(value = "/login", method = RequestMethod.GET)
     public String login(@ModelAttribute AccountsLoginForm form,
+                        @RequestParam(name = "returnTo", required = false) String returnTo,
                         HttpSession session) {
+
         session.removeAttribute(UserSession.KEY);
+
+        if (null != returnTo && returnTo.startsWith("/"))
+            form.setReturnTo(returnTo);
+
         return "accounts/login";
     }
 
@@ -69,7 +76,12 @@ public class AccountsLoginController extends AbstractUserController {
         userSession.setAccountId(account.getId());
         session.setAttribute(UserSession.KEY, userSession);
 
-        return "redirect:/dashboard";
+        String returnTo = form.getReturnTo();
+        if (null == returnTo || !returnTo.startsWith("/")) {
+            returnTo = "/dashboard";
+        }
+
+        return "redirect:" + returnTo;
     }
 
     @RequestMapping(value = "/logout", method = RequestMethod.GET)

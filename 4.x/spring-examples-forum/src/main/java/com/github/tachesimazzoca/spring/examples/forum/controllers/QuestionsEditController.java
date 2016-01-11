@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.NoSuchElementException;
 
@@ -45,7 +46,13 @@ public class QuestionsEditController extends AbstractUserController {
             @RequestParam(name = "id", required = false) Long id) {
         Account account = user.getAccount();
         if (null == account) {
-            throw new NoSuchElementException();
+            String returnTo;
+            if (null == id) {
+                returnTo = "/questions/edit";
+            } else {
+                returnTo = "/questions/edit?id=" + id;
+            }
+            throw new UserSessionException(returnTo);
         }
 
         QuestionsEditForm form = new QuestionsEditForm();
@@ -94,6 +101,18 @@ public class QuestionsEditController extends AbstractUserController {
         // TODO: Show this saved form again with a flash message.
         //return "questions/edit";
         return "redirect:/questions";
+    }
+
+    @ExceptionHandler(UserSessionException.class)
+    public String handleUserSessionException(UserSessionException e) {
+        String returnTo = e.getReturnTo();
+        if (null == returnTo) {
+            return "redirect:/accounts/login";
+        } else {
+            return "redirect:" + UriComponentsBuilder.fromPath("/accounts/login")
+                    .queryParam("returnTo", returnTo)
+                    .build().toUriString();
+        }
     }
 
     @ExceptionHandler(NoSuchElementException.class)
