@@ -12,7 +12,7 @@
 <div style="max-width: 640px">
   <#if question?has_content>
   <div class="form-group">
-    <div class="form-control-static"><strong>ID</strong>: ${question.id}</div> 
+    <div class="form-control-static"><strong>ID</strong>: ${question.id}</div>
   </div>
   </#if>
   <div class="form-group">

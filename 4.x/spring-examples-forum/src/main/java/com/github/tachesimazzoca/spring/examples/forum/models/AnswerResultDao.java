@@ -17,7 +17,7 @@ public class AnswerResultDao {
 
     private static final String SELECT_ANSWER_RESULT = "SELECT"
             + " answers.id AS answers_id,"
-            + " answers.question_id AS answers_questions_id,"
+            + " answers.question_id AS answers_question_id,"
             + " answers.body AS answers_body,"
             + " answers.posted_at AS answers_posted_at,"
             + " answers.status AS answers_status,"
@@ -52,7 +52,7 @@ public class AnswerResultDao {
         final String where = " WHERE answers.status = 0 AND answers.question_id = ?";
         final String countQuery = COUNT_ANSWER_RESULT + where;
         final String selectQuery = SELECT_ANSWER_RESULT + where
-                + " ORDER BY sum_ponts DESC, answers.id ASC";
+                + " ORDER BY sum_points DESC, answers.id ASC";
 
         return Pagination.paginate(offset, limit,
                 () -> jdbcTemplate.queryForObject(countQuery, Long.class, questionId),

@@ -1,17 +1,22 @@
 package com.github.tachesimazzoca.spring.examples.forum.models;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import javax.sql.DataSource;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
+@Component
 public class AnswerDao extends JdbcTemplateDao<Answer> {
     public static final String TABLE_NAME = "answers";
     public static final String[] COLUMNS = {
             "question_id", "author_id", "body", "posted_at", "status"};
     public static final String GENERATED_KEY_COLUMN = "id";
 
+    @Autowired
     public AnswerDao(DataSource dataSource) {
         super(dataSource, TABLE_NAME, COLUMNS, GENERATED_KEY_COLUMN);
     }

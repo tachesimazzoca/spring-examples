@@ -12,13 +12,11 @@ import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.WebDataBinder;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.NoSuchElementException;
 
@@ -59,10 +57,10 @@ public class QuestionsEditController extends AbstractUserController {
         if (null != id) {
             Question question = questionDao.find(id).orElse(null);
             if (null == question) {
-                throw new NoSuchElementException();
+                throw new NoSuchContentException("/questions");
             }
             if (!account.getId().equals(question.getAuthorId())) {
-                throw new NoSuchElementException();
+                throw new NoSuchContentException("/questions");
             }
             form.setQuestion(question);
             form.setSubject(question.getSubject());
@@ -99,22 +97,5 @@ public class QuestionsEditController extends AbstractUserController {
         Question savedQuestion = questionDao.save(question);
 
         return "redirect:/questions/" + savedQuestion.getId();
-    }
-
-    @ExceptionHandler(UserSessionException.class)
-    public String handleUserSessionException(UserSessionException e) {
-        String returnTo = e.getReturnTo();
-        if (null == returnTo) {
-            return "redirect:/accounts/login";
-        } else {
-            return "redirect:" + UriComponentsBuilder.fromPath("/accounts/login")
-                    .queryParam("returnTo", returnTo)
-                    .build().toUriString();
-        }
-    }
-
-    @ExceptionHandler(NoSuchElementException.class)
-    public String handleNoSuchElementException() {
-        return "redirect:/questions";
     }
 }

@@ -113,4 +113,34 @@ public class QuestionsController extends AbstractUserController {
 
         return "questions/detail";
     }
+
+    @RequestMapping(value = "star", method = RequestMethod.GET)
+    public String star(@ModelAttribute User user,
+                       @RequestParam("id") Long id) {
+        return vote(user, id, 1);
+    }
+
+    @RequestMapping(value = "unstar", method = RequestMethod.GET)
+    public String unstar(@ModelAttribute User user,
+                       @RequestParam("id") Long id) {
+        return vote(user, id, 0);
+    }
+
+    private String vote(User user, Long id, int point) {
+        Question question = questionDao.find(id).orElse(null);
+        if (null == question ||
+                question.getStatus() != Question.Status.PUBLISHED) {
+            return "redirect:/questions";
+        }
+
+        Account account = user.getAccount();
+        // Restrict authors from voting to their own post.
+        if (null == account || account.getId().equals(question.getAuthorId())) {
+            return "redirect:/questions/" + id;
+        }
+
+        accountQuestionDao.log(account.getId(), question.getId(), point);
+
+        return "redirect:/questions/" + id;
+    }
 }
