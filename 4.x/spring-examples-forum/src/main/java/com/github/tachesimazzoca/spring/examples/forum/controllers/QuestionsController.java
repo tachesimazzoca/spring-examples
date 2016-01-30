@@ -71,10 +71,20 @@ public class QuestionsController extends AbstractUserController {
     public String detail(@ModelAttribute User user,
                          @PathVariable("id") Long id,
                          Model model) {
+        // account
+        Account account = user.getAccount();
+
         // question
         Question question = questionDao.find(id).orElse(null);
-        if (null == question) {
+        if (null == question ||
+                question.getStatus() == Question.Status.DELETED) {
             return "redirect:/questions";
+        }
+        if (question.getStatus() != Question.Status.PUBLISHED) {
+            if (null == account ||
+                    !account.getId().equals(question.getAuthorId())) {
+                return "redirect:/questions";
+            }
         }
         model.addAttribute("question", question);
 
@@ -88,7 +98,6 @@ public class QuestionsController extends AbstractUserController {
         // questionInfo
         int numPoints = accountQuestionDao.sumPositivePoints(question.getId());
         boolean starred = false;
-        Account account = user.getAccount();
         if (null != account) {
             starred = accountQuestionDao.getPoint(account.getId(), question.getId()) > 0;
         }

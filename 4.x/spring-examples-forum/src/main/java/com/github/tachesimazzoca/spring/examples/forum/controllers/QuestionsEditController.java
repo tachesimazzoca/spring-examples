@@ -96,11 +96,9 @@ public class QuestionsEditController extends AbstractUserController {
         if (null == question.getPostedAt()) {
             question.setPostedAt(new java.util.Date(timer.currentTimeMillis()));
         }
-        questionDao.save(question);
+        Question savedQuestion = questionDao.save(question);
 
-        // TODO: Show this saved form again with a flash message.
-        //return "questions/edit";
-        return "redirect:/questions";
+        return "redirect:/questions/" + savedQuestion.getId();
     }
 
     @ExceptionHandler(UserSessionException.class)
