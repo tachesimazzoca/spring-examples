@@ -39,15 +39,13 @@ public class VerificationController extends AbstractUserController {
     @RequestMapping(value = "/account", method = RequestMethod.GET)
     public String account(@RequestParam("code") String code, Model model) {
         Optional<MultiValueMap<String, String>> valueMapOpt = verificationStorage.read(code);
-        if (!valueMapOpt.isPresent()) {
-            return "redirect:/verification/errors/session";
-        }
+        if (!valueMapOpt.isPresent())
+            throw new NoSuchContentException("/verification/errors/session");
         verificationStorage.delete(code);
 
         Map<String, String> params = valueMapOpt.get().toSingleValueMap();
-        if (accountDao.findByEmail(params.get("email")).isPresent()) {
-            return "redirect:/verification/errors/email";
-        }
+        if (accountDao.findByEmail(params.get("email")).isPresent())
+            throw new NoSuchContentException("/verification/errors/email");
 
         Account account = new Account();
         account.setEmail(params.get("email"));
@@ -63,20 +61,17 @@ public class VerificationController extends AbstractUserController {
     @RequestMapping(value = "/profile", method = RequestMethod.GET)
     public String profile(@RequestParam("code") String code, Model model) {
         Optional<MultiValueMap<String, String>> valueMapOpt = verificationStorage.read(code);
-        if (!valueMapOpt.isPresent()) {
-            return "redirect:/verification/errors/session";
-        }
+        if (!valueMapOpt.isPresent())
+            throw new NoSuchContentException("/verification/errors/session");
         verificationStorage.delete(code);
 
         Map<String, String> params = valueMapOpt.get().toSingleValueMap();
-        if (accountDao.findByEmail(params.get("email")).isPresent()) {
-            return "redirect:/verification/errors/email";
-        }
+        if (accountDao.findByEmail(params.get("email")).isPresent())
+            throw new NoSuchContentException("/verification/errors/email");
 
         Account account = accountDao.find(Long.parseLong(params.get("id"))).orElse(null);
-        if (null == account) {
-            return "redirect:/verification/errors/session";
-        }
+        if (null == account)
+            throw new NoSuchContentException("/verification/errors/session");
 
         account.setEmail(params.get("email"));
         Account savedAccount = accountDao.save(account);
