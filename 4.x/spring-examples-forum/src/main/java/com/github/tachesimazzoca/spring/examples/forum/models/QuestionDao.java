@@ -2,6 +2,9 @@ package com.github.tachesimazzoca.spring.examples.forum.models;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.DefaultTransactionDefinition;
 
 import javax.sql.DataSource;
 import java.sql.ResultSet;
@@ -28,8 +31,16 @@ public class QuestionDao extends JdbcTemplateDao<Question> {
     }
 
     public void updateStatus(Long id, Question.Status status) {
-        getJdbcTemplate().update("UPDATE questions SET status = ? WHERE id = ?",
-                status.getValue(), id);
+        PlatformTransactionManager transactionManager = getTransactionManager();
+        TransactionStatus transaction = transactionManager.getTransaction(
+                new DefaultTransactionDefinition());
+        try {
+            getJdbcTemplate().update("UPDATE questions SET status = ? WHERE id = ?",
+                    status.getValue(), id);
+            transactionManager.commit(transaction);
+        } catch (Exception e) {
+            transactionManager.rollback(transaction);
+        }
     }
 
     @Override

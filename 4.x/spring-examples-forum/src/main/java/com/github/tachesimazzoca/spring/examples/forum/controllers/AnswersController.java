@@ -30,14 +30,14 @@ public class AnswersController extends AbstractUserController {
             throw new UserSessionException("/answers/delete?id=" + id);
 
         Answer answer = answerDao.find(id).orElse(null);
-        if (null == answer || answer.getStatus() != Answer.Status.PUBLISHED)
-            throw new NoSuchContentException("/questions");
+        if (null == answer)
+            throw new NoSuchContentException("/dashboard/answers");
 
         if (account.getId().equals(answer.getAuthorId())) {
             answerDao.updateStatus(answer.getId(), Answer.Status.DELETED);
         }
 
-        return "redirect:/questions/" + answer.getQuestionId();
+        return "redirect:/dashboard/answers";
     }
 
     @RequestMapping(value = "/vote", method = RequestMethod.GET)

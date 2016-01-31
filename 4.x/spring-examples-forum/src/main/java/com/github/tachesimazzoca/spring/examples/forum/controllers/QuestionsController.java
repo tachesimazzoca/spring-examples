@@ -122,6 +122,25 @@ public class QuestionsController extends AbstractUserController {
         return "questions/detail";
     }
 
+    @RequestMapping(value = "/delete", method = RequestMethod.GET)
+    public String delete(@ModelAttribute User user,
+                         @RequestParam("id") Long id) {
+
+        Account account = user.getAccount();
+        if (null == account)
+            throw new UserSessionException("/questions/delete?id=" + id);
+
+        Question question = questionDao.find(id).orElse(null);
+        if (null == question)
+            throw new NoSuchContentException("/dashboard/questions");
+
+        if (account.getId().equals(question.getAuthorId())) {
+            questionDao.updateStatus(question.getId(), Question.Status.DELETED);
+        }
+
+        return "redirect:/dashboard/questions";
+    }
+
     @RequestMapping(value = "star", method = RequestMethod.GET)
     public String star(@ModelAttribute User user,
                        @RequestParam("id") Long id) {

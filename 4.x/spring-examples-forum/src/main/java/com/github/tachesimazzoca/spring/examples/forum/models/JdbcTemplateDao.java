@@ -34,6 +34,10 @@ public abstract class JdbcTemplateDao<T> {
         rowMapper = new InnerRowMapper();
     }
 
+    public PlatformTransactionManager getTransactionManager() {
+        return transactionManager;
+    }
+
     public JdbcTemplate getJdbcTemplate() {
         return jdbcInsert.getJdbcTemplate();
     }
@@ -60,7 +64,7 @@ public abstract class JdbcTemplateDao<T> {
     }
 
     public T create(T entity) {
-        TransactionStatus status = transactionManager.getTransaction(
+        TransactionStatus transaction = transactionManager.getTransaction(
                 new DefaultTransactionDefinition());
 
         final Map<String, ?> entityMap = convertEntityToMap(entity);
@@ -71,14 +75,18 @@ public abstract class JdbcTemplateDao<T> {
             params.addValue(column, entityMap.get(column));
         }
 
-        Number id = jdbcInsert.executeAndReturnKey(params);
-        transactionManager.commit(status);
-
-        return find(id).get();
+        try {
+            Number id = jdbcInsert.executeAndReturnKey(params);
+            transactionManager.commit(transaction);
+            return find(id).get();
+        } catch (Exception e) {
+            transactionManager.rollback(transaction);
+            throw e;
+        }
     }
 
     public T update(T entity) {
-        TransactionStatus status = transactionManager.getTransaction(
+        TransactionStatus transaction = transactionManager.getTransaction(
                 new DefaultTransactionDefinition());
 
         Map<String, ?> entityMap = convertEntityToMap(entity);
@@ -108,11 +116,15 @@ public abstract class JdbcTemplateDao<T> {
         sql.append(" = ?");
         valueList.add(idValue);
 
-        jdbcInsert.getJdbcTemplate().update(
-                sql.toString(), valueList.toArray(new Object[valueList.size()]));
-        transactionManager.commit(status);
-
-        return find(idValue).get();
+        try {
+            jdbcInsert.getJdbcTemplate().update(
+                    sql.toString(), valueList.toArray(new Object[valueList.size()]));
+            transactionManager.commit(transaction);
+            return find(idValue).get();
+        } catch (Exception e) {
+            transactionManager.rollback(transaction);
+            throw e;
+        }
     }
 
     abstract protected Map<String, ?> convertEntityToMap(T entity);
