@@ -88,22 +88,19 @@ public class QuestionsController extends AbstractUserController {
         // question
         Question question = questionDao.find(id).orElse(null);
         if (null == question ||
-                question.getStatus() == Question.Status.DELETED) {
-            return "redirect:/questions";
-        }
+                question.getStatus() == Question.Status.DELETED)
+            throw new NoSuchContentException("/questions");
         if (question.getStatus() != Question.Status.PUBLISHED) {
             if (null == account ||
-                    !account.getId().equals(question.getAuthorId())) {
-                return "redirect:/questions";
-            }
+                    !account.getId().equals(question.getAuthorId()))
+                throw new NoSuchContentException("/questions");
         }
         model.addAttribute("question", question);
 
         // question
         Account author = accountDao.find(question.getAuthorId()).orElse(null);
-        if (null == author) {
-            return "redirect:/questions";
-        }
+        if (null == author)
+            throw new NoSuchContentException("/questions");
         model.addAttribute("author", author);
 
         // questionInfo
@@ -140,15 +137,13 @@ public class QuestionsController extends AbstractUserController {
     private String vote(User user, Long id, int point) {
         Question question = questionDao.find(id).orElse(null);
         if (null == question ||
-                question.getStatus() != Question.Status.PUBLISHED) {
-            return "redirect:/questions";
-        }
+                question.getStatus() != Question.Status.PUBLISHED)
+            throw new NoSuchContentException("/questions");
 
         Account account = user.getAccount();
         // Restrict authors from voting to their own post.
-        if (null == account || account.getId().equals(question.getAuthorId())) {
-            return "redirect:/questions/" + id;
-        }
+        if (null == account || account.getId().equals(question.getAuthorId()))
+            throw new NoSuchContentException("/questions/" + id);
 
         accountQuestionDao.log(account.getId(), question.getId(), point);
 
