@@ -26,8 +26,6 @@ import static com.github.tachesimazzoca.spring.examples.forum.util.ParameterUtil
 @Controller
 @RequestMapping(value = "/questions")
 public class QuestionsController extends AbstractUserController {
-    private static final int QUESTION_RESULT_LIMIT = 10;
-
     @Autowired
     private QuestionResultDao questionResultDao;
 
@@ -48,8 +46,14 @@ public class QuestionsController extends AbstractUserController {
     @RequestMapping(method = RequestMethod.GET)
     public String index(
             @RequestParam(name = "offset", defaultValue = "0") int offset,
+            @RequestParam(name = "limit", defaultValue = "10") int limit,
             @RequestParam(name = "sort", required = false) String sort,
             Model model) {
+
+        if (offset < 0)
+            offset = 0;
+        if (limit < 1)
+            limit = 1;
 
         QuestionResult.OrderBy orderBy;
         if (null != sort && sortMap.containsKey(sort)) {
@@ -60,7 +64,7 @@ public class QuestionsController extends AbstractUserController {
         sort = orderBy.getName();
 
         Pagination<QuestionResult> questions = questionResultDao.selectPublicQuestions(
-                offset, QUESTION_RESULT_LIMIT, orderBy);
+                offset, limit, orderBy);
         model.addAttribute("questions", questions);
         model.addAttribute("sort", sort);
         model.addAttribute("sortMap", sortMap);
@@ -70,7 +74,14 @@ public class QuestionsController extends AbstractUserController {
     @RequestMapping(value = "{id}", method = RequestMethod.GET)
     public String detail(@ModelAttribute User user,
                          @PathVariable("id") Long id,
+                         @RequestParam(name = "offset", defaultValue = "0") int offset,
+                         @RequestParam(name = "limit", defaultValue = "10") int limit,
                          Model model) {
+        if (offset < 0)
+            offset = 0;
+        if (limit < 1)
+            limit = 1;
+
         // account
         Account account = user.getAccount();
 
@@ -108,7 +119,7 @@ public class QuestionsController extends AbstractUserController {
 
         // answers
         Pagination<AnswerResult> answers = answerResultDao.selectByQuestionId(
-                id, 0, 10);
+                id, offset, limit);
         model.addAttribute("answers", answers);
 
         return "questions/detail";
@@ -122,7 +133,7 @@ public class QuestionsController extends AbstractUserController {
 
     @RequestMapping(value = "unstar", method = RequestMethod.GET)
     public String unstar(@ModelAttribute User user,
-                       @RequestParam("id") Long id) {
+                         @RequestParam("id") Long id) {
         return vote(user, id, 0);
     }
 

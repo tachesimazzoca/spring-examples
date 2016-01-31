@@ -67,7 +67,7 @@
 </div>
 </#list>
 </div>
-<@p.defaultPagination answers "${config.url.basedir}questions/${question.id}"></@p.defaultPagination>
+<@p.defaultPagination answers "${config.url.basedir}/questions/${question.id}"></@p.defaultPagination>
 </#if>
 
 </@layout.defaultLayout>
