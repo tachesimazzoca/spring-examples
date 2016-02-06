@@ -16,11 +16,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 import java.util.Map;
-import java.util.Optional;
 
 @Controller
-@RequestMapping(value = "/verification")
-public class VerificationController extends AbstractUserController {
+@RequestMapping(value = "/profile")
+public class ProfileController extends AbstractUserController {
     @Autowired
     private AccountDao accountDao;
 
@@ -33,50 +32,28 @@ public class VerificationController extends AbstractUserController {
             method = RequestMethod.GET)
     @ResponseStatus(HttpStatus.FORBIDDEN)
     public String errors(@PathVariable("reason") String reason) {
-        return "verification/errors/" + reason;
+        return "profile/errors/" + reason;
     }
 
-    @RequestMapping(value = "/account", method = RequestMethod.GET)
-    public String account(@RequestParam("code") String code, Model model) {
-        Optional<MultiValueMap<String, String>> valueMapOpt = verificationStorage.read(code);
-        if (!valueMapOpt.isPresent())
-            throw new NoSuchContentException("/verification/errors/session");
-        verificationStorage.delete(code);
-
-        Map<String, String> params = valueMapOpt.get().toSingleValueMap();
-        if (accountDao.findByEmail(params.get("email")).isPresent())
-            throw new NoSuchContentException("/verification/errors/email");
-
-        Account account = new Account();
-        account.setEmail(params.get("email"));
-        account.setNickname("");
-        account.setStatus(Account.Status.ACTIVE);
-        account.refreshPassword(params.get("password"));
-        Account savedAccount = accountDao.save(account);
-        model.addAttribute("account", savedAccount);
-
-        return "verification/account";
-    }
-
-    @RequestMapping(value = "/profile", method = RequestMethod.GET)
+    @RequestMapping(value = "/activate", method = RequestMethod.GET)
     public String profile(@RequestParam("code") String code, Model model) {
-        Optional<MultiValueMap<String, String>> valueMapOpt = verificationStorage.read(code);
-        if (!valueMapOpt.isPresent())
-            throw new NoSuchContentException("/verification/errors/session");
+        MultiValueMap<String, String> valueMap = verificationStorage.read(code).orElse(null);
+        if (null == valueMap)
+            throw new NoSuchContentException("/profile/errors/session");
         verificationStorage.delete(code);
 
-        Map<String, String> params = valueMapOpt.get().toSingleValueMap();
+        Map<String, String> params = valueMap.toSingleValueMap();
         if (accountDao.findByEmail(params.get("email")).isPresent())
-            throw new NoSuchContentException("/verification/errors/email");
+            throw new NoSuchContentException("/profile/errors/email");
 
         Account account = accountDao.find(Long.parseLong(params.get("id"))).orElse(null);
         if (null == account)
-            throw new NoSuchContentException("/verification/errors/session");
+            throw new NoSuchContentException("/profile/errors/session");
 
         account.setEmail(params.get("email"));
         Account savedAccount = accountDao.save(account);
         model.addAttribute("account", savedAccount);
 
-        return "verification/profile";
+        return "profile/activate";
     }
 }

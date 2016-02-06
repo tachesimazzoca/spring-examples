@@ -83,7 +83,7 @@ public class ProfileEditController extends AbstractUserController {
         valueMap.add("email", form.getEmail());
         String code = verificationStorage.create(valueMap);
         String url = UriComponentsBuilder.fromUriString((String) config.get("url.http"))
-                .path(config.get("url.basedir") + "/verification/profile")
+                .path(config.get("url.basedir") + "/profile/activate")
                 .queryParam("code", code)
                 .build().toUriString();
         LOGGER.info(url);

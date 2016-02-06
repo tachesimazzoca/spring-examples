@@ -62,6 +62,7 @@ public class RecoveryResetController extends AbstractUserController {
                 form.getCode()).orElse(null);
         if (null == valueMap)
             throw new NoSuchContentException("/recovery/errors/session");
+        verificationStorage.delete(form.getCode());
 
         Long id = Long.valueOf(valueMap.toSingleValueMap().get("id"));
         Account account = accountDao.find(id).orElse(null);
