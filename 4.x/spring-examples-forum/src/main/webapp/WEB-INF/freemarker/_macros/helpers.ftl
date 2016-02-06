@@ -44,7 +44,7 @@
 
 <#macro formHiddenInput path>
     <@bindEscaped path false/>
-    <input type="hidden" name="${status.expression?html}"<@closeTag/>
+    <input type="hidden" name="${status.expression?html}" value="${stringStatusValue?html}"<@closeTag/>
 </#macro>
 
 <#macro formTextarea path attributes="class=\"form-control\"">
