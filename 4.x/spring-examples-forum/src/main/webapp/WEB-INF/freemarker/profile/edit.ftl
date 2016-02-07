@@ -1,6 +1,9 @@
 <#import "/_layouts/default.ftl" as layout>
 <#import "/_macros/helpers.ftl" as helpers>
 <@layout.defaultLayout "Editing Profile">
+<#if flash?has_content && flash>
+<div class="alert alert-success" data-role="flash">Your profile has been saved successfully.</div>
+</#if>
 <@helpers.showAllErrors "profileEditForm"/>
 <form action="edit" method="POST">
 <div style="max-width: 400px;">

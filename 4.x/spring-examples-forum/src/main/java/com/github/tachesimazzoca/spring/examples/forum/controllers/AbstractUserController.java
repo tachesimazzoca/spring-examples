@@ -18,7 +18,7 @@ public abstract class AbstractUserController {
     protected AccountDao accountDao;
 
     @ModelAttribute("user")
-    public User createUserFromHttpSession(HttpSession session) {
+    public User createUser(HttpSession session) {
         User user = new User();
         UserSession userSession = (UserSession) session.getAttribute(UserSession.KEY);
         if (null != userSession.getAccountId()) {
@@ -33,7 +33,7 @@ public abstract class AbstractUserController {
     }
 
     @InitBinder("user")
-    public void initAccountBinder(WebDataBinder binder) {
+    public void initUserBinder(WebDataBinder binder) {
         binder.setDisallowedFields(new String[]{"*"});
     }
 

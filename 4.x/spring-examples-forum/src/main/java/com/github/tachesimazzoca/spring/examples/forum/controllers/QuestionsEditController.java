@@ -9,6 +9,7 @@ import com.github.tachesimazzoca.spring.examples.forum.models.User;
 import com.github.tachesimazzoca.spring.examples.forum.util.Timer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.WebDataBinder;
@@ -39,7 +40,7 @@ public class QuestionsEditController extends AbstractUserController {
     }
 
     @ModelAttribute
-    public QuestionsEditForm questionsEditForm(
+    public QuestionsEditForm createQuestionsEditForm(
             @ModelAttribute User user,
             @RequestParam(name = "id", required = false) Long id) {
         Account account = user.getAccount();
@@ -71,7 +72,9 @@ public class QuestionsEditController extends AbstractUserController {
     }
 
     @RequestMapping(value = "/edit", method = RequestMethod.GET)
-    public String edit() {
+    public String edit(@RequestParam(value = "flash", defaultValue = "0") boolean flash,
+                       Model model) {
+        model.addAttribute("flash", flash);
         return "questions/edit";
     }
 
@@ -96,6 +99,6 @@ public class QuestionsEditController extends AbstractUserController {
         }
         Question savedQuestion = questionDao.save(question);
 
-        return "redirect:/questions/" + savedQuestion.getId();
+        return "redirect:/questions/edit?id=" + savedQuestion.getId() + "&flash=1";
     }
 }

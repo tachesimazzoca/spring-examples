@@ -38,7 +38,7 @@ public class RecoveryResetController extends AbstractUserController {
     }
 
     @ModelAttribute("recoveryResetForm")
-    public RecoveryResetForm recoveryResetForm(@RequestParam("code") String code) {
+    public RecoveryResetForm createRecoveryResetForm(@RequestParam("code") String code) {
         if (!verificationStorage.read(code).isPresent())
             throw new NoSuchContentException("/errors/session");
         RecoveryResetForm form = new RecoveryResetForm();

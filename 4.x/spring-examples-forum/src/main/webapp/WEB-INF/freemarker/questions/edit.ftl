@@ -1,7 +1,7 @@
 <#import "/_layouts/default.ftl" as layout>
 <#import "/_macros/helpers.ftl" as helpers>
 <@layout.defaultLayout "Editing Question">
-<#if flash?has_content>
+<#if flash?has_content && flash>
 <div class="alert alert-success" data-role="flash">Your question has been posted successfully.</div>
 </#if>
 <@helpers.showAllErrors "questionsEditForm"/>
