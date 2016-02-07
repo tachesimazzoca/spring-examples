@@ -11,8 +11,7 @@ import javax.servlet.http.HttpSession;
 
 public class UserSessionInterceptor extends HandlerInterceptorAdapter {
     private static final Long SESSION_LIFETIME = 3600L * 1000;
-    private static final String[] SECURE_MAPPING = {
-            "^dashboard(/.*)?$", "^profile(/.*)?$"};
+    private static final String LOGIN_URL_REGEXP = "^accounts/login$";
 
     @Autowired
     private Timer timer;
@@ -25,39 +24,23 @@ public class UserSessionInterceptor extends HandlerInterceptorAdapter {
         HttpSession session = request.getSession();
         UserSession userSession = (UserSession) session.getAttribute(UserSession.KEY);
         Long time = timer.currentTimeMillis();
+
         if (null != userSession) {
             if (time - userSession.getLastAccessedTime() > SESSION_LIFETIME) {
                 userSession = null;
             }
         }
-        if (null == userSession) {
+        if (null == userSession || isLoginRequest(request)) {
             userSession = new UserSession();
         }
         userSession.setLastAccessedTime(time);
         session.setAttribute(UserSession.KEY, userSession);
 
-        if (isSecureRequest(request)) {
-            if (null == userSession.getAccountId()) {
-                response.sendRedirect(request.getContextPath() + "/accounts/login");
-                return false;
-            }
-        }
-
         return super.preHandle(request, response, handler);
     }
 
-    private static boolean isSecureRequest(HttpServletRequest request) {
-        String relativePath;
-        if (request.getContextPath().equals("/")) {
-            relativePath = request.getRequestURI().substring(1);
-        } else {
-            relativePath = request.getRequestURI().substring(request.getContextPath().length() + 1);
-        }
-
-        for (String pattern : SECURE_MAPPING) {
-            if (relativePath.matches(pattern))
-                return true;
-        }
-        return false;
+    private static boolean isLoginRequest(HttpServletRequest request) {
+        String relativePath = request.getRequestURI().substring(request.getContextPath().length() + 1);
+        return relativePath.matches(LOGIN_URL_REGEXP);
     }
 }

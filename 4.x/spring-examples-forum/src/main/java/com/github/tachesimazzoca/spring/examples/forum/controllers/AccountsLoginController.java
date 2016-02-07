@@ -4,6 +4,7 @@ import com.github.tachesimazzoca.spring.examples.forum.models.Account;
 import com.github.tachesimazzoca.spring.examples.forum.models.AccountDao;
 import com.github.tachesimazzoca.spring.examples.forum.models.AccountsLoginForm;
 import com.github.tachesimazzoca.spring.examples.forum.models.AccountsLoginFormValidator;
+import com.github.tachesimazzoca.spring.examples.forum.models.User;
 import com.github.tachesimazzoca.spring.examples.forum.sessions.UserSession;
 import com.github.tachesimazzoca.spring.examples.forum.storage.MultiValueMapStorage;
 import com.github.tachesimazzoca.spring.examples.forum.util.Timer;
@@ -45,10 +46,7 @@ public class AccountsLoginController extends AbstractUserController {
 
     @RequestMapping(value = "/login", method = RequestMethod.GET)
     public String login(@ModelAttribute AccountsLoginForm form,
-                        @RequestParam(name = "returnTo", required = false) String returnTo,
-                        HttpSession session) {
-
-        session.removeAttribute(UserSession.KEY);
+                        @RequestParam(name = "returnTo", required = false) String returnTo) {
 
         if (null != returnTo && returnTo.startsWith("/"))
             form.setReturnTo(returnTo);

@@ -25,7 +25,11 @@ public class DashboardController extends AbstractUserController {
     AnswerResultDao answerResultDao;
 
     @RequestMapping(method = RequestMethod.GET)
-    public String index() {
+    public String index(@ModelAttribute User user) {
+        Account account = user.getAccount();
+        if (null == account)
+            throw new UserSessionException("/dashboard");
+
         return "dashboard/index";
     }
 
@@ -34,14 +38,14 @@ public class DashboardController extends AbstractUserController {
                             @RequestParam(value = "offset", defaultValue = "0") int offset,
                             @RequestParam(value = "limit", defaultValue = "10") int limit,
                             Model model) {
+        Account account = user.getAccount();
+        if (null == account)
+            throw new UserSessionException("/dashboard/questions");
+
         if (offset < 0)
             offset = 0;
         if (limit < 1)
             limit = 1;
-
-        Account account = user.getAccount();
-        if (null == account)
-            throw new UserSessionException("/dashboard/questions");
 
         Pagination<QuestionResult> questions = questionResultDao.selectByAuthorId(
                 account.getId(), offset, limit);
@@ -55,14 +59,14 @@ public class DashboardController extends AbstractUserController {
                           @RequestParam(value = "offset", defaultValue = "0") int offset,
                           @RequestParam(value = "limit", defaultValue = "10") int limit,
                           Model model) {
+        Account account = user.getAccount();
+        if (null == account)
+            throw new UserSessionException("/dashboard/answers");
+
         if (offset < 0)
             offset = 0;
         if (limit < 1)
             limit = 1;
-
-        Account account = user.getAccount();
-        if (null == account)
-            throw new UserSessionException("/dashboard/questions");
 
         Pagination<AnswerResult> answers = answerResultDao.selectByAuthorId(
                 account.getId(), offset, limit);

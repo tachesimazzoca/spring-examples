@@ -46,6 +46,8 @@ public class ProfileEditController extends AbstractUserController {
     @ModelAttribute
     public ProfileEditForm profileEditForm(@ModelAttribute User user) {
         Account account = user.getAccount();
+        if (null == account)
+            throw new UserSessionException("/profile/edit");
         ProfileEditForm form = new ProfileEditForm();
         form.setEmail(account.getEmail());
         form.setNickname(account.getNickname());
