@@ -9,6 +9,7 @@ public class ProfileEditForm {
     private String password = "";
     private String retypedPassword = "";
     private String nickname = "";
+    private String iconToken = "";
 
     private Account currentAccount;
 
@@ -21,6 +22,7 @@ public class ProfileEditForm {
 
     public static String[] getAllowedFields() {
         return new String[]{"email", "currentPassword",
-                "password", "retypedPassword", "nickname"};
+                "password", "retypedPassword", "nickname",
+                "iconToken"};
     }
 }

@@ -12,12 +12,6 @@
 
     <context:property-placeholder location="classpath:/spring.properties"/>
 
-    <!-- config -->
-    <bean id="config"
-          class="com.github.tachesimazzoca.spring.examples.forum.config.TypesafeConfig"
-          factory-method="load">
-    </bean>
-
     <!-- dataSource -->
     <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
         <property name="driverClassName" value="${jdbc.driverClassName}"/>
@@ -64,4 +58,19 @@
         <property name="validationMessageSource" ref="messageSource" />
     </bean>
     -->
+
+    <!-- components -->
+    <bean id="config"
+          class="com.github.tachesimazzoca.spring.examples.forum.config.TypesafeConfig"
+          factory-method="load">
+    </bean>
+    <bean id="tempFileHelper"
+          class="com.github.tachesimazzoca.spring.examples.forum.helpers.TempFileHelper">
+        <constructor-arg value="${path.tmp}"/>
+    </bean>
+    <bean id="profileIconHelper"
+          class="com.github.tachesimazzoca.spring.examples.forum.helpers.FileHelperFactory"
+          factory-method="createProfileIconHelper">
+        <constructor-arg value="${path.upload}/profile"/>
+    </bean>
 </beans>
