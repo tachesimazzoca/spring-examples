@@ -86,8 +86,8 @@
 <#macro formCheckbox path attributes="">
     <@bindEscaped path false/>
     <#assign isSelected = status.value?? && status.value?string=="true">
-	<input type="hidden" name="_${status.expression?html}" value="on"/>
-	<input type="checkbox" name="${status.expression?html}"<#if isSelected> checked="checked"</#if> ${attributes}/>
+    <input type="hidden" name="_${status.expression?html}" value="on"/>
+    <input type="checkbox" name="${status.expression?html}"<#if isSelected> checked="checked"</#if> ${attributes}/>
 </#macro>
 
 <#macro showAllErrors path attributes="class=\"alert alert-danger\"">
@@ -96,7 +96,7 @@
     <div ${attributes}>
         <ul>
         <#list status.errors.allErrors as error>
-            <#assign msg><@message error.code /></#assign>
+            <#assign msg><@message error /></#assign>
             <li>${msg?html}</li>
         </#list>
         </ul>
@@ -110,7 +110,7 @@
     <div ${attributes}>
         <ul>
         <#list status.errors.globalErrors as error>
-            <#assign msg><@message error.code /></#assign>
+            <#assign msg><@message error /></#assign>
             <li>${msg?html}</li>
         </#list>
         </ul>

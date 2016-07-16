@@ -1,33 +1,34 @@
 package com.github.tachesimazzoca.spring.examples.forum.validation;
 
-import org.springframework.util.MultiValueMap;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
-import java.util.List;
-import java.util.Map;
-
 public class FormValidator implements Validator {
-    private Map<String, List<Rule>> ruleMap;
+    private Class<?> assignableClass;
+    private Rule[] rules;
 
-    public FormValidator(Map<String, List<Rule>> ruleMap) {
-        this.ruleMap = ruleMap;
+    public FormValidator(String assignableClassName, Rule... rules) {
+        try {
+            this.assignableClass = Class.forName(assignableClassName);
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public FormValidator(Class<?> assignableClass, Rule... rules) {
+        this.assignableClass = assignableClass;
+        this.rules = rules;
     }
 
     @Override
     public boolean supports(Class<?> aClass) {
-        return aClass.isAssignableFrom(FormValueConverter.class);
+        return aClass.isAssignableFrom(assignableClass);
     }
 
     @Override
     public void validate(Object o, Errors errors) {
-        FormValueConverter form = (FormValueConverter) o;
-        MultiValueMap<String, String> mvm = form.toMultiValueMap();
-        for (Map.Entry<String, List<String>> entry : mvm.entrySet()) {
-            List<Rule> ruleList = ruleMap.get(entry.getKey());
-            for (Rule rule : ruleList) {
-                rule.check(entry.getKey(), entry.getValue(), form, errors);
-            }
+        for (Rule rule : rules) {
+            rule.check(o, errors);
         }
     }
 }

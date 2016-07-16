@@ -84,7 +84,12 @@ public class ProfileEditController extends AbstractUserController {
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
     public String postEdit(@ModelAttribute User user,
                            @Validated @ModelAttribute ProfileEditForm form,
-                           BindingResult errors) {
+                           BindingResult errors,
+                           Model model) {
+
+        model.addAttribute("icon", profileIconHelper.find(
+                String.valueOf(user.getAccount().getId())).isPresent());
+
         if (errors.hasErrors()) {
             return "profile/edit";
         }
