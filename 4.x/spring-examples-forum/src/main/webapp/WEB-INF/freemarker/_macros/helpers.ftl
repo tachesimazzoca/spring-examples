@@ -1,16 +1,24 @@
 <#ftl strip_whitespace=true>
 
-<#macro message code>${springMacroRequestContext.getMessage(code, code)}</#macro>
+<#function message code>
+    <#return springMacroRequestContext.getMessage(code, code)/>
+</#function>
 
-<#macro messageResolvable resolvable>${springMacroRequestContext.getMessage(resolvable)}</#macro>
+<#function messageResolvable resolvable>
+    <#return springMacroRequestContext.getMessage(resolvable)/>
+</#function>
 
-<#macro messageText code, text>${springMacroRequestContext.getMessage(code, text)}</#macro>
+<#function url relativeUrl extra...>
+    <#if extra?? && extra?is_hash>
+        <#return springMacroRequestContext.getContextUrl(relativeUrl, extra)/>
+    <#else>
+        <#return springMacroRequestContext.getContextUrl(relativeUrl)/>
+    </#if>
+</#function>
 
-<#macro messageArgs code, args>${springMacroRequestContext.getMessage(code, args)}</#macro>
-
-<#macro messageArgsText code, args, text>${springMacroRequestContext.getMessage(code, args, text)}</#macro>
-
-<#macro url relativeUrl extra...><#if extra?? && extra?size!=0>${springMacroRequestContext.getContextUrl(relativeUrl,extra)}<#else>${springMacroRequestContext.getContextUrl(relativeUrl)}</#if></#macro>
+<#macro closeTag>
+    <#if xhtmlCompliant?exists && xhtmlCompliant>/><#else>></#if>
+</#macro>
 
 <#macro formInput path fieldType="text" attributes="class=\"form-control\"">
     <#assign _status=springMacroRequestContext.getBindStatus(path, false)/>
@@ -85,14 +93,9 @@
 
 <#macro formCheckboxes path options separator attributes="">
     <#assign _status=springMacroRequestContext.getBindStatus(path, false)/>
-    <#if _status.value?exists && _status.value?is_boolean>
-        <#assign _statusValue=_status.value?string>
-    <#else>
-        <#assign _statusValue=_status.value?default("")>
-    </#if>
     <#list options?keys as value>
-    <#assign isSelected=contains(_status.actualValue?default([""]), value)>
-    <input type="checkbox" id="${id}" name="${_status.expression?html}" value="${value?html}"<#if isSelected> checked="checked"</#if> ${attributes}<@closeTag/>
+    <#assign isSelected=_status.actualValue?default([""])?seq_contains(value)/>
+    <input type="checkbox" name="${_status.expression?html}" value="${value?html}"<#if isSelected> checked="checked"</#if> ${attributes}<@closeTag/>
     <label>${options[value]?html}</label>${separator}
     </#list>
     <input type="hidden" name="_${_status.expression?html}" value="on"/>
@@ -116,8 +119,7 @@
     <div ${attributes}>
         <ul>
         <#list _status.errors.allErrors as error>
-            <#assign msg><@messageResolvable error /></#assign>
-            <li>${msg?html}</li>
+            <li>${messageResolvable(error)?html}</li>
         </#list>
         </ul>
     </div>
@@ -130,8 +132,7 @@
     <div ${attributes}>
         <ul>
         <#list _status.errors.globalErrors as error>
-            <#assign msg><@messageResolvable error /></#assign>
-            <li>${msg?html}</li>
+            <li>${messageResolvable(error)?html}</li>
         </#list>
         </ul>
     </div>
@@ -143,21 +144,10 @@
     <#if (_status.errorMessages?size > 0)>
     <div ${attributes}>
         <ul>
-        <#list _status.errorMessages as msg>
-            <li>${msg?html}</li>
+        <#list _status.errorMessages as _msg>
+            <li>${_msg?html}</li>
         </#list>
         </ul>
     </div>
     </#if>
-</#macro>
-
-<#function contains list item>
-    <#list list as nextInList>
-    <#if nextInList == item><#return true></#if>
-    </#list>
-    <#return false>
-</#function>
-
-<#macro closeTag>
-    <#if xhtmlCompliant?exists && xhtmlCompliant>/><#else>></#if>
 </#macro>
