@@ -63,7 +63,7 @@ public class AccountsEntryController {
         valueMap.add("password", form.getPassword());
         String code = verificationStorage.create(valueMap);
         String url = UriComponentsBuilder.fromUriString((String) config.get("url.http"))
-                .path(config.get("url.basedir") + "/verification/account")
+                .path(config.get("url.basedir") + "/accounts/activate")
                 .queryParam("code", code)
                 .build().toUriString();
         LOGGER.info(url);
