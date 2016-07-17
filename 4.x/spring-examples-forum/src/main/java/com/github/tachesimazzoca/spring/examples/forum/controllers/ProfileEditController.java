@@ -2,6 +2,7 @@ package com.github.tachesimazzoca.spring.examples.forum.controllers;
 
 import com.github.tachesimazzoca.spring.examples.forum.config.Config;
 import com.github.tachesimazzoca.spring.examples.forum.helpers.FileHelper;
+import com.github.tachesimazzoca.spring.examples.forum.helpers.ProfileIconHelper;
 import com.github.tachesimazzoca.spring.examples.forum.helpers.TempFileHelper;
 import com.github.tachesimazzoca.spring.examples.forum.models.Account;
 import com.github.tachesimazzoca.spring.examples.forum.models.AccountDao;
@@ -52,7 +53,7 @@ public class ProfileEditController {
 
     @Autowired
     @Qualifier("profileIconHelper")
-    private FileHelper profileIconHelper;
+    private ProfileIconHelper profileIconHelper;
 
     @Autowired
     private TempFileHelper tempFileHelper;
@@ -75,25 +76,27 @@ public class ProfileEditController {
         return form;
     }
 
+    @ModelAttribute
+    public void createIcon(@ModelAttribute User user, Model model) {
+        Account account = user.getAccount();
+        if (null == account)
+            throw new UserSessionException("/profile/edit");
+        model.addAttribute("icon", profileIconHelper.find(
+                String.valueOf(user.getAccount().getId())).isPresent());
+    }
+
     @RequestMapping(value = "/edit", method = RequestMethod.GET)
     public String edit(@ModelAttribute User user,
                        @RequestParam(value = "flash", defaultValue = "0") boolean flash,
                        Model model) {
         model.addAttribute("flash", flash);
-        model.addAttribute("icon", profileIconHelper.find(
-                String.valueOf(user.getAccount().getId())).isPresent());
         return "profile/edit";
     }
 
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
     public String postEdit(@ModelAttribute User user,
                            @Validated @ModelAttribute ProfileEditForm form,
-                           BindingResult errors,
-                           Model model) {
-
-        model.addAttribute("icon", profileIconHelper.find(
-                String.valueOf(user.getAccount().getId())).isPresent());
-
+                           BindingResult errors) {
         if (errors.hasErrors()) {
             return "profile/edit";
         }

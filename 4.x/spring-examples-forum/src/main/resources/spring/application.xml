@@ -64,8 +64,7 @@
         <constructor-arg value="${path.tmp}"/>
     </bean>
     <bean id="profileIconHelper"
-          class="com.github.tachesimazzoca.spring.examples.forum.helpers.FileHelperFactory"
-          factory-method="createProfileIconHelper">
+          class="com.github.tachesimazzoca.spring.examples.forum.helpers.ProfileIconHelper">
         <constructor-arg value="${path.upload}/profile"/>
     </bean>
 </beans>

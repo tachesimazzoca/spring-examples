@@ -1,6 +1,7 @@
 package com.github.tachesimazzoca.spring.examples.forum.controllers;
 
 import com.github.tachesimazzoca.spring.examples.forum.helpers.FileHelper;
+import com.github.tachesimazzoca.spring.examples.forum.helpers.ProfileIconHelper;
 import com.github.tachesimazzoca.spring.examples.forum.helpers.TempFileHelper;
 import com.github.tachesimazzoca.spring.examples.forum.util.ParameterUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -34,11 +35,11 @@ public class UploadController {
                     "image/png", ParameterUtils.list("png"));
 
     @Autowired
-    TempFileHelper tempFileHelper;
+    private TempFileHelper tempFileHelper;
 
     @Autowired
     @Qualifier("profileIconHelper")
-    FileHelper profileIconHelper;
+    private ProfileIconHelper profileIconHelper;
 
     private Optional<String> detectContentType(String filename) {
         String ext = FilenameUtils.getExtension(filename);

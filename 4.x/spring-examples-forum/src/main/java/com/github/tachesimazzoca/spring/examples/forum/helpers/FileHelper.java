@@ -1,7 +1,9 @@
 package com.github.tachesimazzoca.spring.examples.forum.helpers;
 
+import com.github.tachesimazzoca.spring.examples.forum.util.ParameterUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang.StringUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -14,6 +16,31 @@ public class FileHelper {
     private final File directory;
     private final Map<String, String> mimeTypes;
     private final NamingStrategy namingStrategy;
+
+    public static final Map<String, String> TYPES_IMAGE =
+            ParameterUtils.<String, String>map(
+                    "jpg", "image/jpeg",
+                    "gif", "image/gif",
+                    "png", "image/png"
+            );
+
+    public static final FileHelper.NamingStrategy NAMING_NUMERIC_TREE =
+            new NamingStrategy() {
+                public String buildRelativePath(String name, String extension) {
+                    if (!StringUtils.isNumeric(name))
+                        throw new IllegalArgumentException("The name must contain only digits.");
+                    StringBuilder sb = new StringBuilder();
+                    int max = name.length() - 1;
+                    for (int i = 0; i < max; i++) {
+                        sb.append(name.substring(i, i + 1));
+                        sb.append("/");
+                    }
+                    sb.append(name);
+                    sb.append(".");
+                    sb.append(extension);
+                    return sb.toString();
+                }
+            };
 
     public FileHelper(File directory) {
         this.directory = directory;
