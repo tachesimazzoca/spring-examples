@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 @RequestMapping(value = "/recovery")
-public class RecoveryResetController extends AbstractUserController {
+public class RecoveryResetController {
     @Autowired
     private AccountDao accountDao;
 

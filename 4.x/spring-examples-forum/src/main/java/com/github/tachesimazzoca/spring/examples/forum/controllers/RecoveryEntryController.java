@@ -24,7 +24,7 @@ import java.util.logging.Logger;
 
 @Controller
 @RequestMapping(value = "/recovery")
-public class RecoveryEntryController extends AbstractUserController {
+public class RecoveryEntryController {
     private static final Logger LOGGER = Logger.getLogger(RecoveryEntryController.class.getName());
 
     @Autowired

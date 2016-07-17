@@ -6,6 +6,7 @@ import com.github.tachesimazzoca.spring.examples.forum.models.User;
 import com.github.tachesimazzoca.spring.examples.forum.sessions.UserSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -13,9 +14,18 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.servlet.http.HttpSession;
 
-public abstract class AbstractUserController {
+@ControllerAdvice
+public class AppControllerAdvice {
     @Autowired
     protected AccountDao accountDao;
+
+    @InitBinder
+    public void initBinder(WebDataBinder binder) {
+        // In order to disable auto binding, set a dummy field for convenience
+        // rather than the wild card as the disallowedFields.
+        binder.setAllowedFields("___YOU_MUST_SET_ALLOWED_FIELDS_MANUALLY___");
+        //binder.setDisallowedFields("*");
+    }
 
     @ModelAttribute("user")
     public User createUser(HttpSession session) {
@@ -30,11 +40,6 @@ public abstract class AbstractUserController {
             }
         }
         return user;
-    }
-
-    @InitBinder("user")
-    public void initUserBinder(WebDataBinder binder) {
-        binder.setDisallowedFields(new String[]{"*"});
     }
 
     @ExceptionHandler(UserSessionException.class)

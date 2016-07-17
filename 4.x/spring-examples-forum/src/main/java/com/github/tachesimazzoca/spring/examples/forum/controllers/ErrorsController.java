@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 @Controller
 @RequestMapping(value = "/errors")
-public class ErrorsController extends AbstractUserController {
+public class ErrorsController {
     @RequestMapping(
             value = "/{name:session}",
             method = RequestMethod.GET)

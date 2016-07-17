@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 @RequestMapping(value = "/answers")
-public class AnswersController extends AbstractUserController {
+public class AnswersController {
     @Autowired
     private AnswerDao answerDao;
 

@@ -25,7 +25,7 @@ import java.util.NoSuchElementException;
 
 @Controller
 @RequestMapping(value = "/answers")
-public class AnswersEditController extends AbstractUserController {
+public class AnswersEditController {
     @Autowired
     private QuestionDao questionDao;
 

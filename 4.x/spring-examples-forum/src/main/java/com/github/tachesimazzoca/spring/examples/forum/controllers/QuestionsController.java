@@ -1,6 +1,7 @@
 package com.github.tachesimazzoca.spring.examples.forum.controllers;
 
 import com.github.tachesimazzoca.spring.examples.forum.models.Account;
+import com.github.tachesimazzoca.spring.examples.forum.models.AccountDao;
 import com.github.tachesimazzoca.spring.examples.forum.models.AccountQuestionDao;
 import com.github.tachesimazzoca.spring.examples.forum.models.AnswerResult;
 import com.github.tachesimazzoca.spring.examples.forum.models.AnswerResultDao;
@@ -25,9 +26,12 @@ import static com.github.tachesimazzoca.spring.examples.forum.util.ParameterUtil
 
 @Controller
 @RequestMapping(value = "/questions")
-public class QuestionsController extends AbstractUserController {
+public class QuestionsController {
     @Autowired
     private QuestionResultDao questionResultDao;
+
+    @Autowired
+    private AccountDao accountDao;
 
     @Autowired
     private QuestionDao questionDao;

@@ -23,7 +23,7 @@ import java.util.logging.Logger;
 
 @Controller
 @RequestMapping(value = "/accounts")
-public class AccountsEntryController extends AbstractUserController {
+public class AccountsEntryController {
     private static final Logger LOGGER = Logger.getLogger(AccountsEntryController.class.getName());
 
     @Autowired

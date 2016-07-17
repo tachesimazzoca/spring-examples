@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 @Controller
-public class PagesController extends AbstractUserController {
+public class PagesController {
     @Autowired
     private Config config;
 

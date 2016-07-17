@@ -24,7 +24,7 @@ import javax.servlet.http.HttpSession;
 
 @Controller
 @RequestMapping(value = "/accounts")
-public class AccountsLoginController extends AbstractUserController {
+public class AccountsLoginController {
     @Autowired
     private Timer timer;
 

@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 @RequestMapping(value = "/dashboard")
-public class DashboardController extends AbstractUserController {
+public class DashboardController {
     @Autowired
     QuestionResultDao questionResultDao;
 

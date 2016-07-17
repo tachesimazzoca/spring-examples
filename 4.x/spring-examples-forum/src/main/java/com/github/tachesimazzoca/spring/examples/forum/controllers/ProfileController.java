@@ -16,7 +16,7 @@ import java.util.Map;
 
 @Controller
 @RequestMapping(value = "/profile")
-public class ProfileController extends AbstractUserController {
+public class ProfileController {
     @Autowired
     private AccountDao accountDao;
 

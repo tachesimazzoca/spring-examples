@@ -19,11 +19,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.util.NoSuchElementException;
-
 @Controller
 @RequestMapping(value = "/questions")
-public class QuestionsEditController extends AbstractUserController {
+public class QuestionsEditController {
     @Autowired
     private QuestionDao questionDao;
 

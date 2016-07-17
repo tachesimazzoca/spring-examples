@@ -4,6 +4,7 @@ import com.github.tachesimazzoca.spring.examples.forum.config.Config;
 import com.github.tachesimazzoca.spring.examples.forum.helpers.FileHelper;
 import com.github.tachesimazzoca.spring.examples.forum.helpers.TempFileHelper;
 import com.github.tachesimazzoca.spring.examples.forum.models.Account;
+import com.github.tachesimazzoca.spring.examples.forum.models.AccountDao;
 import com.github.tachesimazzoca.spring.examples.forum.models.ProfileEditForm;
 import com.github.tachesimazzoca.spring.examples.forum.models.ProfileEditFormValidator;
 import com.github.tachesimazzoca.spring.examples.forum.models.User;
@@ -33,11 +34,14 @@ import java.util.logging.Logger;
 
 @Controller
 @RequestMapping(value = "/profile")
-public class ProfileEditController extends AbstractUserController {
+public class ProfileEditController {
     private static final Logger LOGGER = Logger.getLogger(ProfileEditController.class.getName());
 
     @Autowired
     private Config config;
+
+    @Autowired
+    private AccountDao accountDao;
 
     @Autowired
     private ProfileEditFormValidator profileEditFormValidator;

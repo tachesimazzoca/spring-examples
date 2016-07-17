@@ -26,7 +26,7 @@ import java.util.Optional;
 
 @Controller
 @RequestMapping(value = "/upload")
-public class UploadController extends AbstractUserController {
+public class UploadController {
     private static final Map<String, List<String>> SUPPORTED_TYPES =
             ParameterUtils.<String, List<String>>map(
                     "image/jpeg", ParameterUtils.list("jpg", "jpeg"),
