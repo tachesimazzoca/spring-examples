@@ -2,32 +2,26 @@ package com.github.tachesimazzoca.spring.examples.forum.validation;
 
 import com.github.tachesimazzoca.spring.examples.forum.models.Account;
 import com.github.tachesimazzoca.spring.examples.forum.models.AccountDao;
-import org.springframework.beans.BeanWrapper;
-import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.validation.Errors;
 
 import java.util.Optional;
 
-public class UniqueEmailRule implements Rule {
+public class ActiveEmailRule implements Rule {
     private final AccountDao accountDao;
-    private final Optional<String> accountPropertyPath;
     private final String field;
     private final String message;
 
-    public UniqueEmailRule(
+    public ActiveEmailRule(
             AccountDao accountDao,
-            Optional<String> accountPropertyPath,
             String field) {
-        this(accountDao, accountPropertyPath, field, UniqueEmailRule.class.getSimpleName());
+        this(accountDao, field, ActiveEmailRule.class.getSimpleName());
     }
 
-    public UniqueEmailRule(
+    public ActiveEmailRule(
             AccountDao accountDao,
-            Optional<String> accountPropertyPath,
             String field,
             String message) {
         this.accountDao = accountDao;
-        this.accountPropertyPath = accountPropertyPath;
         this.field = field;
         this.message = message;
     }
@@ -37,14 +31,8 @@ public class UniqueEmailRule implements Rule {
         if (errors.hasFieldErrors(field))
             return;
         final String email = (String) errors.getFieldValue(field);
-        final BeanWrapper beanWrapper = new BeanWrapperImpl(o);
-        if (accountPropertyPath.isPresent()) {
-            final Account currentAccount = (Account) beanWrapper.getPropertyValue(accountPropertyPath.get());
-            if (currentAccount.getEmail().equals(email))
-                return;
-        }
         final Optional<Account> accountOpt = accountDao.findByEmail(email);
-        if (accountOpt.isPresent())
+        if (!accountOpt.isPresent() || !accountOpt.get().isActive())
             errors.rejectValue(field, message);
     }
 }

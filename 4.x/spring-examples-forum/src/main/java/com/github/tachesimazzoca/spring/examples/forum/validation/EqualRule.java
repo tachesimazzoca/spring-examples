@@ -24,10 +24,11 @@ public class EqualRule implements Rule {
             return;
 
         String a = (String) errors.getFieldValue(targetField);
-        if (StringUtils.isBlank(a))
-            return;
-
+        if (null == a)
+            a = "";
         String b = (String) errors.getFieldValue(field);
+        if (null == b)
+            b = "";
         if (!a.equals(b)) {
             errors.rejectValue(field, message);
         }
