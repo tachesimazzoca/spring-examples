@@ -9,27 +9,29 @@ import org.springframework.validation.Errors;
 import java.util.Optional;
 
 public class UniqueEmailRule implements Rule {
+    private static final String ERROR_CODE = UniqueEmailRule.class.getSimpleName();
+
     private final AccountDao accountDao;
     private final Optional<String> accountPropertyPath;
     private final String field;
-    private final String message;
+    private final String defaultMessage;
 
     public UniqueEmailRule(
             AccountDao accountDao,
             Optional<String> accountPropertyPath,
             String field) {
-        this(accountDao, accountPropertyPath, field, UniqueEmailRule.class.getSimpleName());
+        this(accountDao, accountPropertyPath, field, ERROR_CODE);
     }
 
     public UniqueEmailRule(
             AccountDao accountDao,
             Optional<String> accountPropertyPath,
             String field,
-            String message) {
+            String defaultMessage) {
         this.accountDao = accountDao;
         this.accountPropertyPath = accountPropertyPath;
         this.field = field;
-        this.message = message;
+        this.defaultMessage = defaultMessage;
     }
 
     @Override
@@ -45,6 +47,6 @@ public class UniqueEmailRule implements Rule {
         }
         final Optional<Account> accountOpt = accountDao.findByEmail(email);
         if (accountOpt.isPresent())
-            errors.rejectValue(field, message);
+            errors.rejectValue(field, ERROR_CODE, defaultMessage);
     }
 }

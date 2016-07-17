@@ -1,25 +1,30 @@
 package com.github.tachesimazzoca.spring.examples.forum.validation;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.validation.Errors;
-import org.springframework.validation.ValidationUtils;
 
 public class NotEmptyRule implements Rule {
+    private static final String ERROR_CODE = NotEmptyRule.class.getSimpleName();
+
     private String field;
-    private String message;
+    private String defaultMessage;
 
     public NotEmptyRule(String field) {
-        this(field, NotEmptyRule.class.getSimpleName());
+        this(field, ERROR_CODE);
     }
 
-    public NotEmptyRule(String field, String message) {
+    public NotEmptyRule(String field, String defaultMessage) {
         this.field = field;
-        this.message = message;
+        this.defaultMessage = defaultMessage;
     }
 
     @Override
     public void check(Object o, Errors errors) {
         if (errors.hasFieldErrors(field))
             return;
-        ValidationUtils.rejectIfEmptyOrWhitespace(errors, field, message);
+        String value = (String) errors.getFieldValue(field);
+        if (StringUtils.isBlank(value)) {
+            errors.rejectValue(field, ERROR_CODE, defaultMessage);
+        }
     }
 }

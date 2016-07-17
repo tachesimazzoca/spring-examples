@@ -7,23 +7,25 @@ import org.springframework.validation.Errors;
 import java.util.Optional;
 
 public class ActiveEmailRule implements Rule {
+    private static final String ERROR_CODE = ActiveEmailRule.class.getSimpleName();
+
     private final AccountDao accountDao;
     private final String field;
-    private final String message;
+    private final String defaultMessage;
 
     public ActiveEmailRule(
             AccountDao accountDao,
             String field) {
-        this(accountDao, field, ActiveEmailRule.class.getSimpleName());
+        this(accountDao, field, ERROR_CODE);
     }
 
     public ActiveEmailRule(
             AccountDao accountDao,
             String field,
-            String message) {
+            String defaultMessage) {
         this.accountDao = accountDao;
         this.field = field;
-        this.message = message;
+        this.defaultMessage = defaultMessage;
     }
 
     @Override
@@ -33,6 +35,6 @@ public class ActiveEmailRule implements Rule {
         final String email = (String) errors.getFieldValue(field);
         final Optional<Account> accountOpt = accountDao.findByEmail(email);
         if (!accountOpt.isPresent() || !accountOpt.get().isActive())
-            errors.rejectValue(field, message);
+            errors.rejectValue(field, ERROR_CODE, defaultMessage);
     }
 }

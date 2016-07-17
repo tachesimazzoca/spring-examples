@@ -65,7 +65,7 @@ public class AccountsLoginController extends AbstractUserController {
         Account account = accountDao.findByEmail(form.getEmail()).orElse(null);
         if (null == account || !account.getStatus().equals(Account.Status.ACTIVE)
                 || !account.isValidPassword(form.getPassword())) {
-            errors.reject("AssertTrue.authorized");
+            errors.reject("AssertTrue.authorized", "Authentication failed.");
             return "accounts/login";
         }
 

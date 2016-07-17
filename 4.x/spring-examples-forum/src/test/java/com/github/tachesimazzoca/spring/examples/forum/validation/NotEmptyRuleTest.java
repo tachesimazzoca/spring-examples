@@ -17,7 +17,8 @@ import static org.junit.Assert.*;
 public class NotEmptyRuleTest {
     @Test
     public void testCheck() {
-        final Rule rule = new NotEmptyRule("username", "NotEmpty.username");
+        final String defaultMessage = "Username may not be empty.";
+        final Rule rule = new NotEmptyRule("username", defaultMessage);
 
         final String[] values = new String[] { null, "", " ", "\n\n", "\t", "　" };
         for (String value : values) {
@@ -29,7 +30,8 @@ public class NotEmptyRuleTest {
             rule.check(new Object(), errors);
             assertTrue(errors.hasErrors());
             assertTrue(errors.hasFieldErrors());
-            assertEquals("NotEmpty.username", errors.getFieldError("username").getCode());
+            assertEquals("NotEmptyRule", errors.getFieldError("username").getCode());
+            assertEquals(defaultMessage, errors.getFieldError("username").getDefaultMessage());
         }
     }
 }

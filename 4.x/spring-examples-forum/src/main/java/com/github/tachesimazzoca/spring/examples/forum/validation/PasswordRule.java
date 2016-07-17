@@ -1,11 +1,13 @@
 package com.github.tachesimazzoca.spring.examples.forum.validation;
 
 public class PasswordRule extends PatternRule {
+    private static final String ERROR_CODE = PasswordRule.class.getSimpleName();
+
     public PasswordRule(String field) {
-        this(field, PasswordRule.class.getSimpleName());
+        this(field, ERROR_CODE);
     }
 
-    public PasswordRule(String field, String message) {
-        super("^.{6,}$", field, message);
+    public PasswordRule(String field, String defaultMessage) {
+        super("^.{6,}$", field, defaultMessage);
     }
 }

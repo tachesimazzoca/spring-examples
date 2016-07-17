@@ -5,18 +5,20 @@ import org.apache.commons.validator.routines.EmailValidator;
 import org.springframework.validation.Errors;
 
 public class EmailRule implements Rule {
+    private static final String ERROR_CODE = EmailRule.class.getSimpleName();
+
     private final EmailValidator emailRule = EmailValidator.getInstance(false);
 
     private String field;
-    private String message;
+    private String defaultMessage;
 
     public EmailRule(String field) {
-        this(field, EmailRule.class.getSimpleName());
+        this(field, ERROR_CODE);
     }
 
-    public EmailRule(String field, String message) {
+    public EmailRule(String field, String defaultMessage) {
         this.field = field;
-        this.message = message;
+        this.defaultMessage = defaultMessage;
     }
 
     @Override
@@ -27,7 +29,7 @@ public class EmailRule implements Rule {
         if (StringUtils.isBlank(email))
             return;
         if (!emailRule.isValid(email)) {
-            errors.rejectValue(field, message);
+            errors.rejectValue(field, ERROR_CODE, defaultMessage);
         }
     }
 }

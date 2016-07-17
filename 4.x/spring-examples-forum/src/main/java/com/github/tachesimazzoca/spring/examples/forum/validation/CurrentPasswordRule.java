@@ -6,17 +6,18 @@ import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.validation.Errors;
 
 public class CurrentPasswordRule implements Rule {
+    private static final String ERROR_CODE = CurrentPasswordRule.class.getSimpleName();
+
     private final String accountPropertyPath;
     private final String passwordField;
     private final String field;
-    private final String message;
+    private final String defaultMessage;
 
     public CurrentPasswordRule(
             String accountPropertyPath,
             String passwordField,
             String field) {
-        this(accountPropertyPath, passwordField, field,
-                CurrentPasswordRule.class.getSimpleName());
+        this(accountPropertyPath, passwordField, field, ERROR_CODE);
     }
 
     public CurrentPasswordRule(
@@ -27,7 +28,7 @@ public class CurrentPasswordRule implements Rule {
         this.accountPropertyPath = accountPropertyPath;
         this.passwordField = passwordField;
         this.field = field;
-        this.message = message;
+        this.defaultMessage = message;
     }
 
     @Override
@@ -42,7 +43,7 @@ public class CurrentPasswordRule implements Rule {
         BeanWrapper beanWrapper = new BeanWrapperImpl(o);
         Account currentAccount = (Account) beanWrapper.getPropertyValue(accountPropertyPath);
         if (!currentAccount.isValidPassword(currentPassword)) {
-            errors.rejectValue(field, message);
+            errors.rejectValue(field, ERROR_CODE, defaultMessage);
         }
     }
 }

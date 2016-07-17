@@ -5,19 +5,21 @@ import org.apache.commons.validator.routines.RegexValidator;
 import org.springframework.validation.Errors;
 
 public class PatternRule implements Rule {
+    private static final String ERROR_CODE = PatternRule.class.getSimpleName();
+
     private final RegexValidator patternValidator;
 
     private final String field;
-    private final String message;
+    private final String defaultMessage;
 
     public PatternRule(String pattern, String field) {
-        this(pattern, field, PatternRule.class.getSimpleName());
+        this(pattern, field, ERROR_CODE);
     }
 
-    public PatternRule(String pattern, String field, String message) {
+    public PatternRule(String pattern, String field, String defaultMessage) {
         patternValidator = new RegexValidator(pattern, false);
         this.field = field;
-        this.message = message;
+        this.defaultMessage = defaultMessage;
     }
 
     @Override
@@ -28,7 +30,7 @@ public class PatternRule implements Rule {
         if (StringUtils.isBlank(value))
             return;
         if (!patternValidator.isValid(value)) {
-            errors.rejectValue(field, message);
+            errors.rejectValue(field, ERROR_CODE, defaultMessage);
         }
     }
 }

@@ -1,21 +1,22 @@
 package com.github.tachesimazzoca.spring.examples.forum.validation;
 
-import org.apache.commons.lang.StringUtils;
 import org.springframework.validation.Errors;
 
 public class EqualRule implements Rule {
+    private static final String ERROR_CODE = EqualRule.class.getSimpleName();
+
     private final String targetField;
     private final String field;
-    private final String message;
+    private final String defaultMessage;
 
     public EqualRule(String targetField, String field) {
-        this(targetField, field, EqualRule.class.getSimpleName());
+        this(targetField, field, ERROR_CODE);
     }
 
-    public EqualRule(String targetField, String field, String message) {
+    public EqualRule(String targetField, String field, String defaultMessage) {
         this.targetField = targetField;
         this.field = field;
-        this.message = message;
+        this.defaultMessage = defaultMessage;
     }
 
     @Override
@@ -30,7 +31,7 @@ public class EqualRule implements Rule {
         if (null == b)
             b = "";
         if (!a.equals(b)) {
-            errors.rejectValue(field, message);
+            errors.rejectValue(field, ERROR_CODE, defaultMessage);
         }
     }
 }
