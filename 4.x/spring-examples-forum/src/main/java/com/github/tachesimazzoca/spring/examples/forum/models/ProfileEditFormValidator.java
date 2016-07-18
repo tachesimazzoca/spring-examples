@@ -1,12 +1,11 @@
 package com.github.tachesimazzoca.spring.examples.forum.models;
 
-import com.github.tachesimazzoca.spring.examples.forum.validation.CurrentPasswordRule;
-import com.github.tachesimazzoca.spring.examples.forum.validation.EmailRule;
-import com.github.tachesimazzoca.spring.examples.forum.validation.EqualRule;
+import com.github.tachesimazzoca.spring.examples.forum.validation.CurrentPasswordChecker;
+import com.github.tachesimazzoca.spring.examples.forum.validation.EmailChecker;
+import com.github.tachesimazzoca.spring.examples.forum.validation.EqualChecker;
 import com.github.tachesimazzoca.spring.examples.forum.validation.FormValidator;
-import com.github.tachesimazzoca.spring.examples.forum.validation.NotEmptyRule;
-import com.github.tachesimazzoca.spring.examples.forum.validation.PasswordRule;
-import com.github.tachesimazzoca.spring.examples.forum.validation.UniqueEmailRule;
+import com.github.tachesimazzoca.spring.examples.forum.validation.PasswordChecker;
+import com.github.tachesimazzoca.spring.examples.forum.validation.UniqueEmailChecker;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -16,12 +15,11 @@ import java.util.Optional;
 public class ProfileEditFormValidator extends FormValidator {
     @Autowired
     public ProfileEditFormValidator(AccountDao accountDao) {
-        super(ProfileEditForm.class,
-                new NotEmptyRule("email"),
-                new EmailRule("email"),
-                new UniqueEmailRule(accountDao, Optional.of("currentAccount"), "email"),
-                new CurrentPasswordRule("currentAccount", "password", "currentPassword"),
-                new PasswordRule("password"),
-                new EqualRule("password", "retypedPassword"));
+        setAssignableClass(ProfileEditForm.class);
+        addRule("email", new EmailChecker());
+        addRule("email", new UniqueEmailChecker(accountDao, Optional.of("currentAccount")));
+        addRule("currentPassword", new CurrentPasswordChecker("currentAccount", "password"));
+        addRule("password", new PasswordChecker(false));
+        addRule("retypedPassword", new EqualChecker("password"));
     }
 }

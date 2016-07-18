@@ -3,11 +3,20 @@ package com.github.tachesimazzoca.spring.examples.forum.validation;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
 public class FormValidator implements Validator {
     private Class<?> assignableClass;
-    private Rule[] rules;
+    private List<Rule> rules = new ArrayList<Rule>();
 
-    public FormValidator(String assignableClassName, Rule... rules) {
+    public void setAssignableClass(Class<?> assignableClass) {
+        this.assignableClass = assignableClass;
+    }
+
+    public void setAssignableClass(String assignableClassName) {
         try {
             this.assignableClass = Class.forName(assignableClassName);
         } catch (ClassNotFoundException e) {
@@ -15,9 +24,12 @@ public class FormValidator implements Validator {
         }
     }
 
-    public FormValidator(Class<?> assignableClass, Rule... rules) {
-        this.assignableClass = assignableClass;
-        this.rules = rules;
+    public void addRule(String field, Checker checker) {
+        rules.add(new Rule(field, checker, null));
+    }
+
+    public void addRule(String field, Checker checker, String defaultMessage) {
+        rules.add(new Rule(field, checker, defaultMessage));
     }
 
     @Override
@@ -28,7 +40,28 @@ public class FormValidator implements Validator {
     @Override
     public void validate(Object o, Errors errors) {
         for (Rule rule : rules) {
-            rule.check(o, errors);
+            if (errors.hasFieldErrors(rule.field))
+                continue;
+            if (!rule.checker.check(errors.getFieldValue(rule.field), o, errors)) {
+                final String code = rule.checker.getClass().getSimpleName();
+                if (null == rule.defaultMessage) {
+                    errors.rejectValue(rule.field, code, code);
+                } else {
+                    errors.rejectValue(rule.field, code, rule.defaultMessage);
+                }
+            }
+        }
+    }
+
+    private class Rule {
+        private final String field;
+        private final Checker checker;
+        private final String defaultMessage;
+
+        public Rule(String field, Checker checker, String defaultMessage) {
+            this.field = field;
+            this.checker = checker;
+            this.defaultMessage = defaultMessage;
         }
     }
 }

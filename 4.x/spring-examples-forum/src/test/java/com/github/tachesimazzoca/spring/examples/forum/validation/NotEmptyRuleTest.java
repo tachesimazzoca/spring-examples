@@ -4,11 +4,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.validation.Errors;
-import org.springframework.validation.MapBindingResult;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Arrays;
+import java.util.Collections;
 
 import static org.junit.Assert.*;
 
@@ -17,21 +15,13 @@ import static org.junit.Assert.*;
 public class NotEmptyRuleTest {
     @Test
     public void testCheck() {
-        final String defaultMessage = "Username may not be empty.";
-        final Rule rule = new NotEmptyRule("username", defaultMessage);
-
+        final Checker checker = new NotEmptyChecker();
         final String[] values = new String[] { null, "", " ", "\n\n", "\t", "　" };
         for (String value : values) {
-            final Map<String, Object> m = new HashMap<>();
-            m.put("username", value);
-            final Errors errors = new MapBindingResult(m, "test");
-            assertEquals(0, errors.getErrorCount());
-
-            rule.check(new Object(), errors);
-            assertTrue(errors.hasErrors());
-            assertTrue(errors.hasFieldErrors());
-            assertEquals("NotEmptyRule", errors.getFieldError("username").getCode());
-            assertEquals(defaultMessage, errors.getFieldError("username").getDefaultMessage());
+            assertFalse(checker.check(value, null, null));
         }
+        assertFalse(checker.check(Collections.<String>emptyList(), null, null));
+        assertTrue(checker.check(".", null, null));
+        assertTrue(checker.check(Arrays.asList("."), null, null));
     }
 }

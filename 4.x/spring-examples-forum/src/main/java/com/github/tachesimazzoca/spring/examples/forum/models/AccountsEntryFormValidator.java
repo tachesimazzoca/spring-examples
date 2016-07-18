@@ -1,11 +1,11 @@
 package com.github.tachesimazzoca.spring.examples.forum.models;
 
-import com.github.tachesimazzoca.spring.examples.forum.validation.EmailRule;
-import com.github.tachesimazzoca.spring.examples.forum.validation.EqualRule;
+import com.github.tachesimazzoca.spring.examples.forum.validation.EmailChecker;
+import com.github.tachesimazzoca.spring.examples.forum.validation.EqualChecker;
 import com.github.tachesimazzoca.spring.examples.forum.validation.FormValidator;
-import com.github.tachesimazzoca.spring.examples.forum.validation.NotEmptyRule;
-import com.github.tachesimazzoca.spring.examples.forum.validation.PasswordRule;
-import com.github.tachesimazzoca.spring.examples.forum.validation.UniqueEmailRule;
+import com.github.tachesimazzoca.spring.examples.forum.validation.NotEmptyChecker;
+import com.github.tachesimazzoca.spring.examples.forum.validation.PasswordChecker;
+import com.github.tachesimazzoca.spring.examples.forum.validation.UniqueEmailChecker;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -15,12 +15,10 @@ import java.util.Optional;
 public class AccountsEntryFormValidator extends FormValidator {
     @Autowired
     public AccountsEntryFormValidator(AccountDao accountDao) {
-        super(AccountsEntryForm.class,
-                new NotEmptyRule("email"),
-                new EmailRule("email"),
-                new UniqueEmailRule(accountDao, Optional.empty(), "email"),
-                new NotEmptyRule("password"),
-                new PasswordRule("password"),
-                new EqualRule("password", "retypedPassword"));
+        setAssignableClass(AccountsEntryForm.class);
+        addRule("email", new EmailChecker());
+        addRule("email", new UniqueEmailChecker(accountDao, Optional.<String>empty()));
+        addRule("password", new PasswordChecker());
+        addRule("retypedPassword", new EqualChecker("password"));
     }
 }
