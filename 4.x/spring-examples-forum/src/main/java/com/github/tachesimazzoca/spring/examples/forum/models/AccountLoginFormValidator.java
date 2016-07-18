@@ -5,9 +5,9 @@ import com.github.tachesimazzoca.spring.examples.forum.validation.NotEmptyChecke
 import org.springframework.stereotype.Component;
 
 @Component
-public class AccountsLoginFormValidator extends FormValidator {
-    public AccountsLoginFormValidator() {
-        setAssignableClass(AccountsLoginForm.class);
+public class AccountLoginFormValidator extends FormValidator {
+    public AccountLoginFormValidator() {
+        setAssignableClass(AccountLoginForm.class);
         addRule("email", new NotEmptyChecker());
         addRule("password", new NotEmptyChecker());
     }

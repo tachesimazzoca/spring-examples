@@ -4,7 +4,7 @@ import lombok.Data;
 import org.apache.commons.lang.StringUtils;
 
 @Data
-public class AccountsEntryForm {
+public class AccountEntryForm {
     private String email = "";
     private String password = "";
     private String retypedPassword = "";

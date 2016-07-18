@@ -11,7 +11,7 @@ import javax.servlet.http.HttpSession;
 
 public class UserSessionInterceptor extends HandlerInterceptorAdapter {
     private static final Long SESSION_LIFETIME = 3600L * 1000;
-    private static final String LOGIN_URL_REGEXP = "^accounts/login$";
+    private static final String LOGIN_URL_REGEXP = "^account/login$";
 
     @Autowired
     private Timer timer;

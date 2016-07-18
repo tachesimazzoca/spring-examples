@@ -40,7 +40,7 @@ public class RecoveryResetController {
     @ModelAttribute("recoveryResetForm")
     public RecoveryResetForm createRecoveryResetForm(@RequestParam("code") String code) {
         if (!verificationStorage.read(code).isPresent())
-            throw new NoSuchContentException("/errors/session");
+            throw new NoSuchContentException("/error/session");
         RecoveryResetForm form = new RecoveryResetForm();
         form.setCode(code);
         return form;
@@ -61,13 +61,13 @@ public class RecoveryResetController {
         MultiValueMap<String, String> valueMap = verificationStorage.read(
                 form.getCode()).orElse(null);
         if (null == valueMap)
-            throw new NoSuchContentException("/errors/session");
+            throw new NoSuchContentException("/error/session");
         verificationStorage.delete(form.getCode());
 
         Long id = Long.valueOf(valueMap.toSingleValueMap().get("id"));
         Account account = accountDao.find(id).orElse(null);
         if (null == account || !account.isActive())
-            throw new NoSuchContentException("/errors/session");
+            throw new NoSuchContentException("/error/session");
 
         account.refreshPassword(form.getPassword());
         accountDao.save(account);

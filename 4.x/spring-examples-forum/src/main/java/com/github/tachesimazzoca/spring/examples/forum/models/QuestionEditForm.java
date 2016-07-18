@@ -7,7 +7,7 @@ import java.util.Map;
 import static com.github.tachesimazzoca.spring.examples.forum.util.ParameterUtils.params;
 
 @Data
-public class QuestionsEditForm {
+public class QuestionEditForm {
     private Question question;
     private String subject;
     private String body;

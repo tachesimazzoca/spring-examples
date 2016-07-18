@@ -4,10 +4,10 @@
 <#if flash?has_content && flash>
 <div class="alert alert-success" data-role="flash">Your question has been posted successfully.</div>
 </#if>
-<@helpers.showAllErrors "questionsEditForm"/>
+<@helpers.showAllErrors "questionEditForm"/>
 <form action="edit" method="POST">
-<#if questionsEditForm.question?has_content>
-<input type="hidden" name="id" value="${questionsEditForm.question.id}">
+<#if questionEditForm.question?has_content>
+<input type="hidden" name="id" value="${questionEditForm.question.id}">
 </#if>
 <div style="max-width: 640px">
   <#if question?has_content>
@@ -17,24 +17,24 @@
   </#if>
   <div class="form-group">
     <label>Subject</label>
-    <@helpers.formInput "questionsEditForm.subject" "text"/>
+    <@helpers.formInput "questionEditForm.subject" "text"/>
   </div>
   <div class="form-group">
     <label>Body</label>
-    <@helpers.formTextarea "questionsEditForm.body"/>
+    <@helpers.formTextarea "questionEditForm.body"/>
   </div>
   <div class="form-group">
     <label>Status</label>
     <select name="status" class="form-control" style="width: auto">
-      <@helpers.formOptions "questionsEditForm.status" questionsEditForm.statusMap/>
+      <@helpers.formOptions "questionEditForm.status" questionEditForm.statusMap/>
     </select>
   </div>
   <div>
     <input type="submit" value="Submit" class="btn btn-success">
-    <#if questionsEditForm.question?has_content>
-    <a href="${config.url.basedir}/questions/${questionsEditForm.question.id}" class="btn btn-default">Browse</a>
+    <#if questionEditForm.question?has_content>
+    <a href="${config.url.basedir}/question/${questionEditForm.question.id}" class="btn btn-default">Browse</a>
     </#if>
-    <a href="${config.url.basedir}/dashboard/questions" class="btn btn-default">Dashboard</a>
+    <a href="${config.url.basedir}/dashboard/question" class="btn btn-default">Dashboard</a>
   </div>
 </div>
 </form>

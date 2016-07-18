@@ -8,13 +8,13 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 @Controller
-@RequestMapping(value = "/errors")
-public class ErrorsController {
+@RequestMapping(value = "/error")
+public class ErrorController {
     @RequestMapping(
             value = "/{name:session}",
             method = RequestMethod.GET)
     @ResponseStatus(HttpStatus.FORBIDDEN)
     public String forbidden(@PathVariable String name) {
-        return "errors/" + name;
+        return "error/" + name;
     }
 }

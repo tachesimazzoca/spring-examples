@@ -2,8 +2,8 @@ package com.github.tachesimazzoca.spring.examples.forum.controllers;
 
 import com.github.tachesimazzoca.spring.examples.forum.config.Config;
 import com.github.tachesimazzoca.spring.examples.forum.models.AccountDao;
-import com.github.tachesimazzoca.spring.examples.forum.models.AccountsEntryForm;
-import com.github.tachesimazzoca.spring.examples.forum.models.AccountsEntryFormValidator;
+import com.github.tachesimazzoca.spring.examples.forum.models.AccountEntryForm;
+import com.github.tachesimazzoca.spring.examples.forum.models.AccountEntryFormValidator;
 import com.github.tachesimazzoca.spring.examples.forum.storage.MultiValueMapStorage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -22,9 +22,9 @@ import org.springframework.web.util.UriComponentsBuilder;
 import java.util.logging.Logger;
 
 @Controller
-@RequestMapping(value = "/accounts")
-public class AccountsEntryController {
-    private static final Logger LOGGER = Logger.getLogger(AccountsEntryController.class.getName());
+@RequestMapping(value = "/account")
+public class AccountEntryController {
+    private static final Logger LOGGER = Logger.getLogger(AccountEntryController.class.getName());
 
     @Autowired
     private Config config;
@@ -33,28 +33,28 @@ public class AccountsEntryController {
     private AccountDao accountDao;
 
     @Autowired
-    private AccountsEntryFormValidator accountsEntryFormValidator;
+    private AccountEntryFormValidator accountEntryFormValidator;
 
     @Autowired
     @Qualifier("verificationStorage")
     private MultiValueMapStorage verificationStorage;
 
-    @InitBinder("accountsEntryForm")
-    public void initAccountsEntryFormBinder(WebDataBinder binder) {
-        binder.setAllowedFields(AccountsEntryForm.getAllowedFields());
-        binder.setValidator(accountsEntryFormValidator);
+    @InitBinder("accountEntryForm")
+    public void initAccountEntryFormBinder(WebDataBinder binder) {
+        binder.setAllowedFields(AccountEntryForm.getAllowedFields());
+        binder.setValidator(accountEntryFormValidator);
     }
 
     @RequestMapping(value = "/entry", method = RequestMethod.GET)
-    public String entry(@ModelAttribute AccountsEntryForm form) {
-        return "accounts/entry";
+    public String entry(@ModelAttribute AccountEntryForm form) {
+        return "account/entry";
     }
 
     @RequestMapping(value = "/entry", method = RequestMethod.POST)
-    public String postEntry(@Validated @ModelAttribute AccountsEntryForm form,
+    public String postEntry(@Validated @ModelAttribute AccountEntryForm form,
                             BindingResult errors) {
         if (errors.hasErrors()) {
-            return "accounts/entry";
+            return "account/entry";
         }
 
         // Store the parameters temporarily
@@ -63,11 +63,11 @@ public class AccountsEntryController {
         valueMap.add("password", form.getPassword());
         String code = verificationStorage.create(valueMap);
         String url = UriComponentsBuilder.fromUriString((String) config.get("url.http"))
-                .path(config.get("url.basedir") + "/accounts/activate")
+                .path(config.get("url.basedir") + "/account/activate")
                 .queryParam("code", code)
                 .build().toUriString();
         LOGGER.info(url);
 
-        return "accounts/verify";
+        return "account/verify";
     }
 }

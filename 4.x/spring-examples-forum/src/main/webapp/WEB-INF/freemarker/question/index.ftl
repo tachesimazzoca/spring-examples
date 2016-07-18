@@ -3,7 +3,7 @@
 <#setting url_escaping_charset="UTF-8">
 <@layout.defaultLayout "Questions">
 <p>
-   <a href="questions/edit" class="btn btn-default">New Question</a>
+   <a href="question/edit" class="btn btn-default">New Question</a>
 </p>
 <#if questions.results?has_content>
 <hr>
@@ -38,7 +38,7 @@
 <tr>
   <td>${x.id}</td>
   <td>
-    <div><a href="questions/${x.id}">${(x.subject)?html}</a></div>
+    <div><a href="question/${x.id}">${(x.subject)?html}</a></div>
     <div>${author?html} posted at ${x.postedAt?string("yyyy-MM-dd HH:mm:ss")}</div>
   </td>
   <td>${x.numAnswers}</td>
@@ -47,6 +47,6 @@
 </#list>
 </tbody>
 </table>
-<@p.defaultPagination questions "${config.url.basedir}/questions?sort=${sort?url}"></@p.defaultPagination>
+<@p.defaultPagination questions "${config.url.basedir}/question?sort=${sort?url}"></@p.defaultPagination>
 </#if>
 </@layout.defaultLayout>

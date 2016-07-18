@@ -21,13 +21,13 @@
     <div class="text-muted"><small>Posted at ${(x.postedAt)?string("yyyy-MM-dd HH:mm:ss")}</small></div>
   </td>
   <td class="text-right text-nowrap">
-    <a href="${config.url.basedir}/answers/edit?id=${x.id}" class="btn btn-default">Edit</a></li>
-    <a href="${config.url.basedir}/answers/delete?id=${x.id}" onclick="return confirm('Are you sure to delete?')" class="btn btn-danger">Delete</a>
+    <a href="${config.url.basedir}/answer/edit?id=${x.id}" class="btn btn-default">Edit</a></li>
+    <a href="${config.url.basedir}/answer/delete?id=${x.id}" onclick="return confirm('Are you sure to delete?')" class="btn btn-danger">Delete</a>
   </td>
 </tr>
 </#list>
 </tbody>
 </table>
-<@p.defaultPagination answers "${config.url.basedir}/dashboard/answers"></@p.defaultPagination>
+<@p.defaultPagination answers "${config.url.basedir}/dashboard/answer"></@p.defaultPagination>
 </#if>
 </@layout.defaultLayout>

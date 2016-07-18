@@ -2,14 +2,14 @@ package com.github.tachesimazzoca.spring.examples.forum.validation;
 
 import com.github.tachesimazzoca.spring.examples.forum.models.Account;
 import com.github.tachesimazzoca.spring.examples.forum.models.AccountDao;
-import com.github.tachesimazzoca.spring.examples.forum.models.AccountsEntryForm;
-import com.github.tachesimazzoca.spring.examples.forum.models.AccountsEntryFormValidator;
-import com.github.tachesimazzoca.spring.examples.forum.models.AnswersEditForm;
-import com.github.tachesimazzoca.spring.examples.forum.models.AnswersEditFormValidator;
+import com.github.tachesimazzoca.spring.examples.forum.models.AccountEntryForm;
+import com.github.tachesimazzoca.spring.examples.forum.models.AccountEntryFormValidator;
+import com.github.tachesimazzoca.spring.examples.forum.models.AnswerEditForm;
+import com.github.tachesimazzoca.spring.examples.forum.models.AnswerEditFormValidator;
 import com.github.tachesimazzoca.spring.examples.forum.models.ProfileEditForm;
 import com.github.tachesimazzoca.spring.examples.forum.models.ProfileEditFormValidator;
-import com.github.tachesimazzoca.spring.examples.forum.models.QuestionsEditForm;
-import com.github.tachesimazzoca.spring.examples.forum.models.QuestionsEditFormValidator;
+import com.github.tachesimazzoca.spring.examples.forum.models.QuestionEditForm;
+import com.github.tachesimazzoca.spring.examples.forum.models.QuestionEditFormValidator;
 import com.github.tachesimazzoca.spring.examples.forum.models.RecoveryEntryForm;
 import com.github.tachesimazzoca.spring.examples.forum.models.RecoveryEntryFormValidator;
 import org.junit.Test;
@@ -32,9 +32,9 @@ public class FormValidatorTest {
     public void testAccountsEntryFormValidator() {
         AccountDao accountDao = Mockito.mock(AccountDao.class);
         Mockito.when(accountDao.findByEmail(Mockito.anyString())).thenReturn(Optional.empty());
-        final FormValidator validator = new AccountsEntryFormValidator(accountDao);
+        final FormValidator validator = new AccountEntryFormValidator(accountDao);
 
-        final AccountsEntryForm form = new AccountsEntryForm();
+        final AccountEntryForm form = new AccountEntryForm();
         assertTrue(validator.supports(form.getClass()));
         final Errors errors = new MapBindingResult(
                 params(
@@ -50,9 +50,9 @@ public class FormValidatorTest {
 
     @Test
     public void testQuestionsEditFormValidator() {
-        final FormValidator validator = new QuestionsEditFormValidator();
+        final FormValidator validator = new QuestionEditFormValidator();
 
-        final QuestionsEditForm form = new QuestionsEditForm();
+        final QuestionEditForm form = new QuestionEditForm();
         assertTrue(validator.supports(form.getClass()));
         final Errors errors = new MapBindingResult(
                 params("subject", "How does it works?", "body", ""),
@@ -66,9 +66,9 @@ public class FormValidatorTest {
 
     @Test
     public void testAnswersEditFormValidator() {
-        final FormValidator validator = new AnswersEditFormValidator();
+        final FormValidator validator = new AnswerEditFormValidator();
 
-        final AnswersEditForm form = new AnswersEditForm();
+        final AnswerEditForm form = new AnswerEditForm();
         assertTrue(validator.supports(form.getClass()));
         final Errors errors = new MapBindingResult(
                 params("body", ""), "answersEditForm");

@@ -22,8 +22,8 @@
 
 <div>
 <ul class="list-group">
-   <li class="list-group-item"><a href="${config.url.basedir}/dashboard/questions">Questions</a></li>
-   <li class="list-group-item"><a href="${config.url.basedir}/dashboard/answers">Answers</a></li>
+   <li class="list-group-item"><a href="${config.url.basedir}/dashboard/question">Questions</a></li>
+   <li class="list-group-item"><a href="${config.url.basedir}/dashboard/answer">Answers</a></li>
 </ul>
 </div>
 

@@ -37,13 +37,13 @@
       </div>
       <div class="collapse navbar-collapse" id="jsNavbarCollapse-1">
         <ul class="nav navbar-nav">
-          <li><a href="${config.url.basedir}/questions">Questions</a></li>
+          <li><a href="${config.url.basedir}/question">Questions</a></li>
           <#if user.account?has_content>
           <li><a href="${config.url.basedir}/dashboard">Dashboard</a></li>
-          <li><a href="${config.url.basedir}/accounts/logout">Sign Out</a></li>
+          <li><a href="${config.url.basedir}/account/logout">Sign Out</a></li>
           <#else>
-          <li><a href="${config.url.basedir}/accounts/entry">Sign Up</a></li>
-          <li><a href="${config.url.basedir}/accounts/login">Sign In</a></li>
+          <li><a href="${config.url.basedir}/account/entry">Sign Up</a></li>
+          <li><a href="${config.url.basedir}/account/login">Sign In</a></li>
           </#if>
         </ul>
       </div>

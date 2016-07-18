@@ -5,9 +5,9 @@ import com.github.tachesimazzoca.spring.examples.forum.validation.NotEmptyChecke
 import org.springframework.stereotype.Component;
 
 @Component
-public class AnswersEditFormValidator extends FormValidator {
-    public AnswersEditFormValidator() {
-        setAssignableClass(AnswersEditForm.class);
+public class AnswerEditFormValidator extends FormValidator {
+    public AnswerEditFormValidator() {
+        setAssignableClass(AnswerEditForm.class);
         addRule("body", new NotEmptyChecker());
     }
 }

@@ -25,19 +25,19 @@ public class ProfileController {
     private MultiValueMapStorage verificationStorage;
 
     @RequestMapping(value = "/activate", method = RequestMethod.GET)
-    public String profile(@RequestParam("code") String code, Model model) {
+    public String activate(@RequestParam("code") String code, Model model) {
         MultiValueMap<String, String> valueMap = verificationStorage.read(code).orElse(null);
         if (null == valueMap)
-            throw new NoSuchContentException("/errors/session");
+            throw new NoSuchContentException("/error/session");
         verificationStorage.delete(code);
 
         Map<String, String> params = valueMap.toSingleValueMap();
         if (accountDao.findByEmail(params.get("email")).isPresent())
-            throw new NoSuchContentException("/errors/session");
+            throw new NoSuchContentException("/error/session");
 
         Account account = accountDao.find(Long.parseLong(params.get("id"))).orElse(null);
         if (null == account)
-            throw new NoSuchContentException("/errors/session");
+            throw new NoSuchContentException("/error/session");
 
         account.setEmail(params.get("email"));
         Account savedAccount = accountDao.save(account);

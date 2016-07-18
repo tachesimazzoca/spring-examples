@@ -3,8 +3,8 @@ package com.github.tachesimazzoca.spring.examples.forum.controllers;
 import com.github.tachesimazzoca.spring.examples.forum.models.Account;
 import com.github.tachesimazzoca.spring.examples.forum.models.Answer;
 import com.github.tachesimazzoca.spring.examples.forum.models.AnswerDao;
-import com.github.tachesimazzoca.spring.examples.forum.models.AnswersEditForm;
-import com.github.tachesimazzoca.spring.examples.forum.models.AnswersEditFormValidator;
+import com.github.tachesimazzoca.spring.examples.forum.models.AnswerEditForm;
+import com.github.tachesimazzoca.spring.examples.forum.models.AnswerEditFormValidator;
 import com.github.tachesimazzoca.spring.examples.forum.models.Question;
 import com.github.tachesimazzoca.spring.examples.forum.models.QuestionDao;
 import com.github.tachesimazzoca.spring.examples.forum.models.User;
@@ -24,8 +24,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import java.util.NoSuchElementException;
 
 @Controller
-@RequestMapping(value = "/answers")
-public class AnswersEditController {
+@RequestMapping(value = "/answer")
+public class AnswerEditController {
     @Autowired
     private QuestionDao questionDao;
 
@@ -33,19 +33,19 @@ public class AnswersEditController {
     private AnswerDao answerDao;
 
     @Autowired
-    private AnswersEditFormValidator answersEditFormValidator;
+    private AnswerEditFormValidator answerEditFormValidator;
 
     @Autowired
     private Timer timer;
 
-    @InitBinder("answersEditForm")
-    public void initAnswersEditFormBinder(WebDataBinder binder) {
-        binder.setAllowedFields(AnswersEditForm.getAllowedFields());
-        binder.setValidator(answersEditFormValidator);
+    @InitBinder("answerEditForm")
+    public void initAnswerEditFormBinder(WebDataBinder binder) {
+        binder.setAllowedFields(AnswerEditForm.getAllowedFields());
+        binder.setValidator(answerEditFormValidator);
     }
 
     @ModelAttribute
-    public AnswersEditForm createAnswersEditForm(
+    public AnswerEditForm createAnswerEditForm(
             @ModelAttribute User user,
             @RequestParam(name = "questionId", required = false) Long questionId,
             @RequestParam(name = "id", required = false) Long id) {
@@ -56,29 +56,29 @@ public class AnswersEditController {
         Answer answer;
         if (null == id) {
             if (null == questionId)
-                throw new NoSuchContentException("/questions");
+                throw new NoSuchContentException("/question");
             question = questionDao.find(questionId).orElse(null);
             answer = null;
         } else {
             answer = answerDao.find(id).orElse(null);
             if (null == answer)
-                throw new NoSuchContentException("/questions");
+                throw new NoSuchContentException("/question");
             question = questionDao.find(answer.getQuestionId()).orElse(null);
         }
         if (null == question)
-            throw new NoSuchContentException("/questions");
+            throw new NoSuchContentException("/question");
 
         if (null == account) {
             String returnTo;
             if (null == id) {
-                returnTo = "/answers/edit?questionId=" + question.getId();
+                returnTo = "/answer/edit?questionId=" + question.getId();
             } else {
-                returnTo = "/answers/edit?id=" + id;
+                returnTo = "/answer/edit?id=" + id;
             }
             throw new UserSessionException(returnTo);
         }
 
-        AnswersEditForm form = new AnswersEditForm();
+        AnswerEditForm form = new AnswerEditForm();
         form.setQuestion(question);
         if (null != answer) {
             if (!account.getId().equals(answer.getAuthorId()))
@@ -94,15 +94,15 @@ public class AnswersEditController {
     public String edit(@RequestParam(value = "flash", defaultValue = "0") boolean flash,
                        Model model) {
         model.addAttribute("flash", flash);
-        return "answers/edit";
+        return "answer/edit";
     }
 
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
     public String postEdit(@ModelAttribute User user,
-                           @Validated @ModelAttribute AnswersEditForm form,
+                           @Validated @ModelAttribute AnswerEditForm form,
                            BindingResult errors) {
         if (errors.hasErrors()) {
-            return "answers/edit";
+            return "answer/edit";
         }
 
         Answer answer = form.getAnswer();
@@ -118,6 +118,6 @@ public class AnswersEditController {
         }
         Answer savedAnswer = answerDao.save(answer);
 
-        return "redirect:/answers/edit?id=" + savedAnswer.getId() + "&flash=1";
+        return "redirect:/answer/edit?id=" + savedAnswer.getId() + "&flash=1";
     }
 }

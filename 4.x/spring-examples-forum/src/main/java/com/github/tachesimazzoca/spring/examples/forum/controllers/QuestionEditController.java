@@ -3,8 +3,8 @@ package com.github.tachesimazzoca.spring.examples.forum.controllers;
 import com.github.tachesimazzoca.spring.examples.forum.models.Account;
 import com.github.tachesimazzoca.spring.examples.forum.models.Question;
 import com.github.tachesimazzoca.spring.examples.forum.models.QuestionDao;
-import com.github.tachesimazzoca.spring.examples.forum.models.QuestionsEditForm;
-import com.github.tachesimazzoca.spring.examples.forum.models.QuestionsEditFormValidator;
+import com.github.tachesimazzoca.spring.examples.forum.models.QuestionEditForm;
+import com.github.tachesimazzoca.spring.examples.forum.models.QuestionEditFormValidator;
 import com.github.tachesimazzoca.spring.examples.forum.models.User;
 import com.github.tachesimazzoca.spring.examples.forum.util.Timer;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,46 +20,46 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
-@RequestMapping(value = "/questions")
-public class QuestionsEditController {
+@RequestMapping(value = "/question")
+public class QuestionEditController {
     @Autowired
     private QuestionDao questionDao;
 
     @Autowired
-    private QuestionsEditFormValidator questionsEditFormValidator;
+    private QuestionEditFormValidator questionEditFormValidator;
 
     @Autowired
     private Timer timer;
 
-    @InitBinder("questionsEditForm")
-    public void initQuestionsEditFormBinder(WebDataBinder binder) {
-        binder.setAllowedFields(QuestionsEditForm.getAllowedFields());
-        binder.setValidator(questionsEditFormValidator);
+    @InitBinder("questionEditForm")
+    public void initQuestionEditFormBinder(WebDataBinder binder) {
+        binder.setAllowedFields(QuestionEditForm.getAllowedFields());
+        binder.setValidator(questionEditFormValidator);
     }
 
     @ModelAttribute
-    public QuestionsEditForm createQuestionsEditForm(
+    public QuestionEditForm createQuestionEditForm(
             @ModelAttribute User user,
             @RequestParam(name = "id", required = false) Long id) {
         Account account = user.getAccount();
         if (null == account) {
             String returnTo;
             if (null == id) {
-                returnTo = "/questions/edit";
+                returnTo = "/question/edit";
             } else {
-                returnTo = "/questions/edit?id=" + id;
+                returnTo = "/question/edit?id=" + id;
             }
             throw new UserSessionException(returnTo);
         }
 
-        QuestionsEditForm form = new QuestionsEditForm();
+        QuestionEditForm form = new QuestionEditForm();
         if (null != id) {
             Question question = questionDao.find(id).orElse(null);
             if (null == question) {
-                throw new NoSuchContentException("/questions");
+                throw new NoSuchContentException("/question");
             }
             if (!account.getId().equals(question.getAuthorId())) {
-                throw new NoSuchContentException("/questions");
+                throw new NoSuchContentException("/question");
             }
             form.setQuestion(question);
             form.setSubject(question.getSubject());
@@ -73,15 +73,15 @@ public class QuestionsEditController {
     public String edit(@RequestParam(value = "flash", defaultValue = "0") boolean flash,
                        Model model) {
         model.addAttribute("flash", flash);
-        return "questions/edit";
+        return "question/edit";
     }
 
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
     public String postEdit(@ModelAttribute User user,
-                           @Validated @ModelAttribute QuestionsEditForm form,
+                           @Validated @ModelAttribute QuestionEditForm form,
                            BindingResult errors) {
         if (errors.hasErrors()) {
-            return "questions/edit";
+            return "question/edit";
         }
 
         Question question = form.getQuestion();
@@ -97,6 +97,6 @@ public class QuestionsEditController {
         }
         Question savedQuestion = questionDao.save(question);
 
-        return "redirect:/questions/edit?id=" + savedQuestion.getId() + "&flash=1";
+        return "redirect:/question/edit?id=" + savedQuestion.getId() + "&flash=1";
     }
 }

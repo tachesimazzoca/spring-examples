@@ -15,8 +15,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import java.util.Map;
 
 @Controller
-@RequestMapping(value = "/accounts")
-public class AccountsController {
+@RequestMapping(value = "/account")
+public class AccountController {
     @Autowired
     private AccountDao accountDao;
 
@@ -25,15 +25,15 @@ public class AccountsController {
     private MultiValueMapStorage verificationStorage;
 
     @RequestMapping(value = "/activate", method = RequestMethod.GET)
-    public String account(@RequestParam("code") String code, Model model) {
+    public String activate(@RequestParam("code") String code, Model model) {
         MultiValueMap<String, String> valueMap = verificationStorage.read(code).orElse(null);
         if (null == valueMap)
-            throw new NoSuchContentException("/errors/session");
+            throw new NoSuchContentException("/error/session");
         verificationStorage.delete(code);
 
         Map<String, String> params = valueMap.toSingleValueMap();
         if (accountDao.findByEmail(params.get("email")).isPresent())
-            throw new NoSuchContentException("/errors/session");
+            throw new NoSuchContentException("/error/session");
 
         Account account = new Account();
         account.setEmail(params.get("email"));
@@ -43,6 +43,6 @@ public class AccountsController {
         Account savedAccount = accountDao.save(account);
         model.addAttribute("account", savedAccount);
 
-        return "accounts/activate";
+        return "account/activate";
     }
 }

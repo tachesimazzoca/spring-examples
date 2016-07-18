@@ -13,8 +13,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
-@RequestMapping(value = "/answers")
-public class AnswersController {
+@RequestMapping(value = "/answer")
+public class AnswerController {
     @Autowired
     private AnswerDao answerDao;
 
@@ -27,17 +27,17 @@ public class AnswersController {
 
         Account account = user.getAccount();
         if (null == account)
-            throw new UserSessionException("/answers/delete?id=" + id);
+            throw new UserSessionException("/answer/delete?id=" + id);
 
         Answer answer = answerDao.find(id).orElse(null);
         if (null == answer)
-            throw new NoSuchContentException("/dashboard/answers");
+            throw new NoSuchContentException("/dashboard/answer");
 
         if (account.getId().equals(answer.getAuthorId())) {
             answerDao.updateStatus(answer.getId(), Answer.Status.DELETED);
         }
 
-        return "redirect:/dashboard/answers";
+        return "redirect:/dashboard/answer";
     }
 
     @RequestMapping(value = "/vote", method = RequestMethod.GET)
@@ -47,16 +47,16 @@ public class AnswersController {
 
         Account account = user.getAccount();
         if (null == account)
-            throw new UserSessionException("/answers/vote?id=" + id + "&point=" + point);
+            throw new UserSessionException("/answer/vote?id=" + id + "&point=" + point);
 
         Answer answer = answerDao.find(id).orElse(null);
         if (null == answer || answer.getStatus() != Answer.Status.PUBLISHED)
-            throw new NoSuchContentException("/questions");
+            throw new NoSuchContentException("/question");
 
         if (!account.getId().equals(answer.getAuthorId())) {
             accountAnswerDao.log(account.getId(), id, point);
         }
 
-        return "redirect:/questions/" + answer.getQuestionId();
+        return "redirect:/question/" + answer.getQuestionId();
     }
 }

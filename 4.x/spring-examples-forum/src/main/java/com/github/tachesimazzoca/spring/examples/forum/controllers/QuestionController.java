@@ -25,8 +25,8 @@ import java.util.Map;
 import static com.github.tachesimazzoca.spring.examples.forum.util.ParameterUtils.params;
 
 @Controller
-@RequestMapping(value = "/questions")
-public class QuestionsController {
+@RequestMapping(value = "/question")
+public class QuestionController {
     @Autowired
     private QuestionResultDao questionResultDao;
 
@@ -72,7 +72,7 @@ public class QuestionsController {
         model.addAttribute("questions", questions);
         model.addAttribute("sort", sort);
         model.addAttribute("sortMap", sortMap);
-        return "questions/index";
+        return "question/index";
     }
 
     @RequestMapping(value = "{id}", method = RequestMethod.GET)
@@ -93,18 +93,18 @@ public class QuestionsController {
         Question question = questionDao.find(id).orElse(null);
         if (null == question ||
                 question.getStatus() == Question.Status.DELETED)
-            throw new NoSuchContentException("/questions");
+            throw new NoSuchContentException("/question");
         if (question.getStatus() != Question.Status.PUBLISHED) {
             if (null == account ||
                     !account.getId().equals(question.getAuthorId()))
-                throw new NoSuchContentException("/questions");
+                throw new NoSuchContentException("/question");
         }
         model.addAttribute("question", question);
 
         // question
         Account author = accountDao.find(question.getAuthorId()).orElse(null);
         if (null == author)
-            throw new NoSuchContentException("/questions");
+            throw new NoSuchContentException("/question");
         model.addAttribute("author", author);
 
         // questionInfo
@@ -123,7 +123,7 @@ public class QuestionsController {
                 id, offset, limit);
         model.addAttribute("answers", answers);
 
-        return "questions/detail";
+        return "question/detail";
     }
 
     @RequestMapping(value = "/delete", method = RequestMethod.GET)
@@ -132,17 +132,17 @@ public class QuestionsController {
 
         Account account = user.getAccount();
         if (null == account)
-            throw new UserSessionException("/questions/delete?id=" + id);
+            throw new UserSessionException("/question/delete?id=" + id);
 
         Question question = questionDao.find(id).orElse(null);
         if (null == question)
-            throw new NoSuchContentException("/dashboard/questions");
+            throw new NoSuchContentException("/dashboard/question");
 
         if (account.getId().equals(question.getAuthorId())) {
             questionDao.updateStatus(question.getId(), Question.Status.DELETED);
         }
 
-        return "redirect:/dashboard/questions";
+        return "redirect:/dashboard/question";
     }
 
     @RequestMapping(value = "star", method = RequestMethod.GET)
@@ -161,15 +161,15 @@ public class QuestionsController {
         Question question = questionDao.find(id).orElse(null);
         if (null == question ||
                 question.getStatus() != Question.Status.PUBLISHED)
-            throw new NoSuchContentException("/questions");
+            throw new NoSuchContentException("/question");
 
         Account account = user.getAccount();
         // Restrict authors from voting to their own post.
         if (null == account || account.getId().equals(question.getAuthorId()))
-            throw new NoSuchContentException("/questions/" + id);
+            throw new NoSuchContentException("/question/" + id);
 
         accountQuestionDao.log(account.getId(), question.getId(), point);
 
-        return "redirect:/questions/" + id;
+        return "redirect:/question/" + id;
     }
 }

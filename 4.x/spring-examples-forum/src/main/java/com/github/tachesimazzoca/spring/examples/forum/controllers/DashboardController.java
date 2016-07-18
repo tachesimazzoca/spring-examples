@@ -33,14 +33,14 @@ public class DashboardController {
         return "dashboard/index";
     }
 
-    @RequestMapping(value = "/questions", method = RequestMethod.GET)
-    public String questions(@ModelAttribute User user,
+    @RequestMapping(value = "/question", method = RequestMethod.GET)
+    public String question(@ModelAttribute User user,
                             @RequestParam(value = "offset", defaultValue = "0") int offset,
                             @RequestParam(value = "limit", defaultValue = "10") int limit,
                             Model model) {
         Account account = user.getAccount();
         if (null == account)
-            throw new UserSessionException("/dashboard/questions");
+            throw new UserSessionException("/dashboard/question");
 
         if (offset < 0)
             offset = 0;
@@ -51,17 +51,17 @@ public class DashboardController {
                 account.getId(), offset, limit);
         model.addAttribute("questions", questions);
 
-        return "dashboard/questions";
+        return "dashboard/question";
     }
 
-    @RequestMapping(value = "/answers", method = RequestMethod.GET)
-    public String answers(@ModelAttribute User user,
+    @RequestMapping(value = "/answer", method = RequestMethod.GET)
+    public String answer(@ModelAttribute User user,
                           @RequestParam(value = "offset", defaultValue = "0") int offset,
                           @RequestParam(value = "limit", defaultValue = "10") int limit,
                           Model model) {
         Account account = user.getAccount();
         if (null == account)
-            throw new UserSessionException("/dashboard/answers");
+            throw new UserSessionException("/dashboard/answer");
 
         if (offset < 0)
             offset = 0;
@@ -72,6 +72,6 @@ public class DashboardController {
                 account.getId(), offset, limit);
         model.addAttribute("answers", answers);
 
-        return "dashboard/answers";
+        return "dashboard/answer";
     }
 }

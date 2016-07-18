@@ -46,9 +46,9 @@ public class AppControllerAdvice {
     public String handleUserSessionException(UserSessionException e) {
         String returnTo = e.getReturnTo();
         if (null == returnTo) {
-            return "redirect:/accounts/login";
+            return "redirect:/account/login";
         } else {
-            return "redirect:" + UriComponentsBuilder.fromPath("/accounts/login")
+            return "redirect:" + UriComponentsBuilder.fromPath("/account/login")
                     .queryParam("returnTo", returnTo)
                     .build().toUriString();
         }

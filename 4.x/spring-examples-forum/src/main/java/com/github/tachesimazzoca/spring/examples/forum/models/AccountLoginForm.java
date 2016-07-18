@@ -3,7 +3,7 @@ package com.github.tachesimazzoca.spring.examples.forum.models;
 import lombok.Data;
 
 @Data
-public class AccountsLoginForm {
+public class AccountLoginForm {
     private String email = "";
     private String password = "";
     private String returnTo = "";
