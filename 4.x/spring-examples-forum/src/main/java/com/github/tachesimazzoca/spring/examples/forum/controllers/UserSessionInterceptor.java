@@ -1,7 +1,7 @@
 package com.github.tachesimazzoca.spring.examples.forum.controllers;
 
 import com.github.tachesimazzoca.spring.examples.forum.sessions.UserSession;
-import com.github.tachesimazzoca.spring.examples.forum.util.Timer;
+import com.github.tachesimazzoca.spring.examples.forum.util.Clock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
@@ -14,7 +14,7 @@ public class UserSessionInterceptor extends HandlerInterceptorAdapter {
     private static final String LOGIN_URL_REGEXP = "^account/login$";
 
     @Autowired
-    private Timer timer;
+    private Clock clock;
 
     @Override
     public boolean preHandle(HttpServletRequest request,
@@ -23,7 +23,7 @@ public class UserSessionInterceptor extends HandlerInterceptorAdapter {
 
         HttpSession session = request.getSession();
         UserSession userSession = (UserSession) session.getAttribute(UserSession.KEY);
-        Long time = timer.currentTimeMillis();
+        Long time = clock.currentTimeMillis();
 
         if (null != userSession) {
             if (time - userSession.getLastAccessedTime() > SESSION_LIFETIME) {

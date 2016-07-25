@@ -6,7 +6,7 @@ import com.github.tachesimazzoca.spring.examples.forum.models.AccountLoginForm;
 import com.github.tachesimazzoca.spring.examples.forum.models.AccountLoginFormValidator;
 import com.github.tachesimazzoca.spring.examples.forum.sessions.UserSession;
 import com.github.tachesimazzoca.spring.examples.forum.storage.MultiValueMapStorage;
-import com.github.tachesimazzoca.spring.examples.forum.util.Timer;
+import com.github.tachesimazzoca.spring.examples.forum.util.Clock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
@@ -25,7 +25,7 @@ import javax.servlet.http.HttpSession;
 @RequestMapping(value = "/account")
 public class AccountLoginController {
     @Autowired
-    private Timer timer;
+    private Clock clock;
 
     @Autowired
     private AccountDao accountDao;
@@ -69,7 +69,7 @@ public class AccountLoginController {
         }
 
         UserSession userSession = new UserSession();
-        userSession.setLastAccessedTime(timer.currentTimeMillis());
+        userSession.setLastAccessedTime(clock.currentTimeMillis());
         userSession.setAccountId(account.getId());
         session.setAttribute(UserSession.KEY, userSession);
 

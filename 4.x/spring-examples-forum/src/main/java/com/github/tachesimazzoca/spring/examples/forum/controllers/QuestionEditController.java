@@ -6,7 +6,7 @@ import com.github.tachesimazzoca.spring.examples.forum.models.QuestionDao;
 import com.github.tachesimazzoca.spring.examples.forum.models.QuestionEditForm;
 import com.github.tachesimazzoca.spring.examples.forum.models.QuestionEditFormValidator;
 import com.github.tachesimazzoca.spring.examples.forum.models.User;
-import com.github.tachesimazzoca.spring.examples.forum.util.Timer;
+import com.github.tachesimazzoca.spring.examples.forum.util.Clock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -29,7 +29,7 @@ public class QuestionEditController {
     private QuestionEditFormValidator questionEditFormValidator;
 
     @Autowired
-    private Timer timer;
+    private Clock clock;
 
     @InitBinder("questionEditForm")
     public void initQuestionEditFormBinder(WebDataBinder binder) {
@@ -93,7 +93,7 @@ public class QuestionEditController {
         question.setBody(form.getBody());
         question.setStatus(Question.Status.fromValue(form.getStatus()));
         if (null == question.getPostedAt()) {
-            question.setPostedAt(new java.util.Date(timer.currentTimeMillis()));
+            question.setPostedAt(new java.util.Date(clock.currentTimeMillis()));
         }
         Question savedQuestion = questionDao.save(question);
 

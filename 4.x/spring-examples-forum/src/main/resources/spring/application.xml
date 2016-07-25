@@ -19,9 +19,9 @@
         <property name="defaultAutoCommit" value="false"/>
     </bean>
 
-    <!-- timer -->
-    <bean id="timer"
-          class="com.github.tachesimazzoca.spring.examples.forum.util.SystemTimer">
+    <!-- clock -->
+    <bean id="clock"
+          class="com.github.tachesimazzoca.spring.examples.forum.util.SystemClock">
     </bean>
 
     <!-- storage -->
