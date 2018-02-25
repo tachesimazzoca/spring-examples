@@ -1,0 +1,14 @@
+*~
+
+/.project
+/.classpath
+/.settings
+
+/.idea
+/*.iml
+
+/target
+
+/src/main/resources/logback.xml
+/src/test/resources/test/spring/application.xml
+/src/test/resources/test/spring/spring.properties
