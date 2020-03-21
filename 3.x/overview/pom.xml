@@ -2,18 +2,17 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.github.tachesimazzoca</groupId>
-  <artifactId>spring-examples-web</artifactId>
+  <artifactId>spring-examples-overview</artifactId>
   <packaging>jar</packaging>
   <version>0.1.0-SNAPSHOT</version>
-  <name>Spring Framework Example | Web</name>
-  <url>http://github.com/tachesimazzoca/spring-examples/web/</url>
+  <name>Spring Framework Overview</name>
+  <url>http://github.com/tachesimazzoca/spring-examples/overview/</url>
   <properties>
     <maven.compiler.encoding>UTF-8</maven.compiler.encoding>
     <maven.compiler.target>1.6</maven.compiler.target>
     <maven.compiler.source>1.6</maven.compiler.source>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-    <spring.version>3.2.4.RELEASE</spring.version>
   </properties>
   <repositories>
     <repository>
@@ -26,47 +25,52 @@
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-context</artifactId>
-      <version>${spring.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-webmvc</artifactId>
-      <version>${spring.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>taglibs</groupId>
-      <artifactId>standard</artifactId>
-      <version>1.1.2</version>
-    </dependency>
-    <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>jstl</artifactId>
-      <version>1.2</version>
-    </dependency>
-    <dependency>
-      <groupId>org.codehaus.jackson</groupId>
-      <artifactId>jackson-mapper-asl</artifactId>
-      <version>1.9.13</version>
-    </dependency>
-    <dependency>
-      <groupId>org.thymeleaf</groupId>
-      <artifactId>thymeleaf-spring3</artifactId>
-      <version>2.0.18</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.commons</groupId>
-      <artifactId>commons-lang3</artifactId>
-      <version>3.1</version>
-    </dependency>
+      <version>3.2.4.RELEASE</version>
+    </dependency> 
   </dependencies>
   <build>
     <plugins>
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-war-plugin</artifactId>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>exec-maven-plugin</artifactId>
+        <version>1.6</version>
         <configuration>
-          <warName>${artifactId}</warName>
+          <mainClass>com.github.tachesimazzoca.spring.overview.Main</mainClass>
         </configuration>
+      </plugin>
+      <plugin>
+        <artifactId>maven-jar-plugin</artifactId>
+        <version>2.4</version>
+        <configuration>
+          <archive>
+            <manifest>
+              <mainClass>com.github.tachesimazzoca.spring.overview.Main</mainClass>
+              <addClasspath>true</addClasspath>
+              <addExtensions>true</addExtensions>
+              <classpathPrefix>lib</classpathPrefix>
+            </manifest>
+          </archive>
+        </configuration>
+      </plugin>
+      <plugin>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <version>2.4</version>
+        <configuration>
+          <descriptors>
+            <descriptor>etc/assembly/dist.xml</descriptor>
+          </descriptors>
+        </configuration>
+        <!--
+        <executions>
+          <execution>
+            <id>make-assembly</id>
+            <phase>package</phase>
+            <goals>
+              <goal>single</goal>
+            </goals>
+          </execution>
+        </executions>
+        -->
       </plugin>
     </plugins>
   </build>
