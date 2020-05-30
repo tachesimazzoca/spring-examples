@@ -1,0 +1,14 @@
+*~
+
+.classpath
+.project
+.settings
+
+.idea
+*.iml
+
+.gradle
+/build
+
+/bin
+/target
