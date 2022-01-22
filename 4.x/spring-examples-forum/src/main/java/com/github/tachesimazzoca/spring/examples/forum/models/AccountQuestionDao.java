@@ -26,7 +26,7 @@ public class AccountQuestionDao {
                 new DefaultTransactionDefinition());
 
         jdbcTemplate.update(
-                "DELETE account_questions"
+                "DELETE FROM account_questions"
                         + " WHERE account_id = ? AND question_id = ?",
                 accountId, questionId);
         jdbcTemplate.update("INSERT INTO account_questions"
