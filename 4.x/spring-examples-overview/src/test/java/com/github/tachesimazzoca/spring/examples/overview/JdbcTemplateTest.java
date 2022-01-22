@@ -75,7 +75,7 @@ public class JdbcTemplateTest {
         Map<String, Object> row = rows.get(0);
         assertEquals(id, row.get("id"));
         assertEquals("user1@example.net", row.get("email"));
-        assertEquals((byte) 0, row.get("status"));
+        assertEquals(0, row.get("status"));
     }
 
     @Test
