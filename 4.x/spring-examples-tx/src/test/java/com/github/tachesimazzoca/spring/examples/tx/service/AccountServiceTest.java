@@ -2,6 +2,7 @@ package com.github.tachesimazzoca.spring.examples.tx.service;
 
 import com.github.tachesimazzoca.spring.examples.tx.entity.Account;
 import org.h2.jdbc.JdbcSQLException;
+import org.h2.jdbc.JdbcSQLIntegrityConstraintViolationException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -88,9 +89,9 @@ public class AccountServiceTest {
         accounts[3] = new Account(1L, "user4", null); // primary key violation
         try {
             Account[] savedAccounts = accountService.createAccounts(accounts);
-            fail("It should throw JdbcSQLException");
+            fail("It should throw JdbcSQLIntegrityConstraintViolationException");
         } catch (Exception e) {
-            assertEquals(JdbcSQLException.class, e.getCause().getClass());
+            assertEquals(JdbcSQLIntegrityConstraintViolationException.class, e.getCause().getClass());
             System.out.println(e.getMessage());
         }
         JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
